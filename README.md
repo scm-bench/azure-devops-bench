@@ -1,3 +1,17 @@
+<!--
+  The banner lives in scm-bench/.github (brand/), which is also where the
+  organization profile and the uploaded avatar draw from, so there is one copy
+  rather than one per repository. The URLs are absolute because a relative path
+  cannot cross repositories.
+-->
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/scm-bench/.github/main/brand/banner-azure-devops-bench-dark-1760x440.png">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/scm-bench/.github/main/brand/banner-azure-devops-bench-light-1760x440.png">
+    <img src="https://raw.githubusercontent.com/scm-bench/.github/main/brand/banner-azure-devops-bench-light-1760x440.png" alt="azure-devops-bench — audit Azure DevOps against the CIS supply chain benchmark" width="880">
+  </picture>
+</p>
+
 # azure-devops-bench
 
 Audit **Azure DevOps** — Azure Repos and the project settings around it —
