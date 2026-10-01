@@ -605,10 +605,17 @@ func TestEvaluationScalesWithRepositories(t *testing.T) {
 	if rep.Repositories != n {
 		t.Fatalf("evaluated %d", rep.Repositories)
 	}
-	// 1,000 repositories in under 30s, race detector included, is 10,000 in
-	// well under a minute without it.
-	if took > 30*time.Second {
-		t.Errorf("%d repositories took %s", n, took)
+	// 1,000 repositories in under 10s is 10,000 in well under the minute the
+	// conventions allow, with room for a slow CI runner; the race detector
+	// slows evaluation roughly tenfold and gets a budget to match. Either
+	// catches what this test exists for: a cost that grows faster than the
+	// organization.
+	budget := 10 * time.Second
+	if raceEnabled {
+		budget = 90 * time.Second
+	}
+	if took > budget {
+		t.Errorf("%d repositories took %s (budget %s)", n, took, budget)
 	}
 	t.Logf("%d repositories evaluated in %s", n, took)
 }
