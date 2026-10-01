@@ -1,0 +1,31 @@
+internal/scm/azuredevops/policies.go
+  s_48d8fa1c49bfb6::t_89e366591814db 1-451
+internal/scm/azuredevops/repository.go
+  s_48d8fa1c49bfb6::t_9eb853ee43902a 1-643
+internal/scm/azuredevops/acl.go
+  s_48d8fa1c49bfb6::t_03b1d1192b0e47 1-229
+internal/scm/azuredevops/fetcher.go
+  s_48d8fa1c49bfb6::t_7b7e38f32eb17a 1-825
+  s_48d8fa1c49bfb6::t_59bbfce7b32d9c 826-885
+internal/scm/azuredevops/users.go
+  s_48d8fa1c49bfb6::t_a6b6bee8d5c316 1-112
+  s_48d8fa1c49bfb6::t_644b5a55da5149 113-114
+internal/scm/azuredevops/identity.go
+  s_48d8fa1c49bfb6::t_b25afcb9fdf588 1-777
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "1b4943040524264b6a616c9ad6932c3ce062a7ef",
+  "prompts": {},
+  "sessions": {
+    "s_48d8fa1c49bfb6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b91ffb09-1c76-4e54-9777-4525648b2969",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Xianpeng Shen <xianpeng.shen@gmail.com>"
+    }
+  }
+}
