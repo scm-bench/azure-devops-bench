@@ -609,13 +609,115 @@ repository renamed — is reported so it can be removed.
 
 ## In CI
 
+The thresholds live in an `azure-devops-bench.yaml` committed next to the
+pipeline, so the pipeline and a laptop read the same file and disagree about
+nothing:
+
+```yaml
+# azure-devops-bench.yaml
+scan:
+  failOn: high
+  maxManual: 40
+```
+
+**Azure Pipelines** — the results land in the run's *Tests* tab through
+`PublishTestResults`:
+
+```yaml
+- script: |
+    azure-devops-bench scan --url "$(System.CollectionUri)" \
+      -o junit --output-file "$(Agent.TempDirectory)/azure-devops-bench.xml"
+  displayName: Audit Azure DevOps
+  env:
+    AZURE_DEVOPS_TOKEN: $(AUDIT_TOKEN)   # a secret variable: a PAT, or an Entra token for the scanner's service principal
+
+- task: PublishTestResults@2
+  condition: succeededOrFailed()
+  inputs:
+    testResultsFormat: JUnit
+    testResultsFiles: $(Agent.TempDirectory)/azure-devops-bench.xml
+    testRunTitle: azure-devops-bench
+    failTaskOnFailedTests: false   # the scan's exit code is the gate
+```
+
+The token is a PAT or a Microsoft Entra token for a service principal set up
+as in [What the token needs](#what-the-token-needs). The pipeline's own
+identity, `$(System.AccessToken)`, is deliberately not the recommendation: it
+is limited to the pipeline's project unless that setting was relaxed, and
+whether its build service identity can read the permission, Graph and
+entitlement APIs this scan depends on has not been verified. A scan that cannot
+read them reports `MANUAL` rather than wrong verdicts, so trying it is safe,
+but expect gaps. Secret variables reach a script only through `env:`, as above.
+
+**GitHub Actions** — upload the SARIF to code scanning. The scan exits `1`
+when it finds something, which is the point, but that would end the job before
+the upload; the failure is deferred to the last step. The upload needs
+`security-events: write` in the job's `permissions` — and, in a private
+repository, `actions: read` and `contents: read` too.
+
+```yaml
+- name: Audit Azure DevOps
+  id: audit
+  continue-on-error: true
+  run: |
+    azure-devops-bench scan --url "${{ vars.AZURE_DEVOPS_URL }}" \
+      -o sarif --output-file azure-devops-bench.sarif
+  env:
+    AZURE_DEVOPS_TOKEN: ${{ secrets.AZURE_DEVOPS_TOKEN }}
+
+- name: Upload to code scanning
+  if: always()
+  uses: github/codeql-action/upload-sarif@v4
+  with:
+    sarif_file: azure-devops-bench.sarif
+    category: azure-devops-bench
+
+- name: Fail the job if the audit did
+  if: steps.audit.outcome == 'failure'
+  run: exit 1
+```
+
+Alerts land against the synthetic path in each result's `physicalLocation`,
+not against a file in the repository, because a finding is a setting rather
+than a line of code; `json` is the better input for a dashboard.
+
+**Jenkins** — the JUnit publisher draws the result in the build's test view:
+
+```groovy
+stage('Audit Azure DevOps') {
+  steps {
+    withCredentials([string(credentialsId: 'azure-devops-bench-token', variable: 'AZURE_DEVOPS_TOKEN')]) {
+      sh '''
+        azure-devops-bench scan --url https://dev.azure.com/fabrikam \
+          -o junit --output-file azure-devops-bench.xml
+      '''
+    }
+  }
+  post {
+    always {
+      // Draws the report; the scan's exit code has already decided the build.
+      junit testResults: 'azure-devops-bench.xml', allowEmptyResults: true, skipMarkingBuildUnstable: true
+    }
+  }
+}
+```
+
+In every recipe **the scan's exit code decides the build and the report only
+draws it.** A test report cannot carry the gate: JUnit has no notion of
+severity, so every unaccepted `FAIL` is a failing test — `LOW` included — and
+a publisher left to fail the build on failing tests gates on something
+stricter than `failOn`. And a scan whose exit code is thrown away lets a
+breached `maxManual` or `failUnder` through — as a yellow build, since
+Jenkins' `junit` step marks failing tests `UNSTABLE` rather than failed, or as
+a green one when nothing happened to fail as a test.
+
 Exit codes:
 
 | Code | Meaning |
 |---|---|
 | `0` | The scan ran and breached no threshold |
 | `1` | The scan ran and breached one |
-| `2` | The scan could not vouch for its result: a bad config or credential, an unknown `--project`, a control that failed to evaluate, **no repository evaluated at all**, or **a project whose repositories could not be listed** (unless `scan.allowIncomplete`) |
+| `2` | The scan could not complete — or cannot vouch for what it covered |
 
 Three settings drive exit `1`, and they answer different questions:
 
@@ -625,56 +727,25 @@ Three settings drive exit `1`, and they answer different questions:
 | `scan.failUnder` | Is the score acceptable? 0–100; `0` disables |
 | `scan.maxManual` | Did the scan see enough to have an opinion? A percentage; `-1` disables |
 
+Start at `failOn: high` and tighten once the first round of findings is
+cleared; [exceptions](#exceptions) are for the findings that will not be.
+
 `scan.maxManual` is worth setting early. Findings that could not be read are
 excluded from the score rather than counted against it — right for one control,
 misleading in aggregate, because a token that has lost a scope shrinks the
 denominator and can score *higher* than a working one. `scan.failUnder` cannot
 catch that; `scan.maxManual` can.
 
-**Azure Pipelines**, with the results in the run's *Tests* tab:
-
-```yaml
-- script: azure-devops-bench scan -o junit --output-file $(Agent.TempDirectory)/azure-devops-bench.xml
-  displayName: Audit Azure DevOps
-  env:
-    AZURE_DEVOPS_URL: $(System.CollectionUri)
-    # A secret variable holding a PAT or an Entra token. $(System.AccessToken)
-    # is not one: the build identity's token cannot read permissions.
-    AZURE_DEVOPS_TOKEN: $(AUDIT_TOKEN)
-
-- task: PublishTestResults@2
-  condition: always()
-  inputs:
-    testResultsFormat: JUnit
-    testResultsFiles: $(Agent.TempDirectory)/azure-devops-bench.xml
-    testRunTitle: azure-devops-bench
-```
-
-**GitHub Actions**, with the results in code scanning:
-
-```yaml
-- name: Audit Azure DevOps
-  id: audit
-  continue-on-error: true   # upload the report before failing the job
-  run: azure-devops-bench scan -o sarif --output-file azure-devops-bench.sarif
-  env:
-    AZURE_DEVOPS_URL: https://dev.azure.com/fabrikam
-    AZURE_DEVOPS_TOKEN: ${{ secrets.AZURE_DEVOPS_TOKEN }}
-
-- uses: github/codeql-action/upload-sarif@v3
-  if: always()
-  with:
-    sarif_file: azure-devops-bench.sarif
-    category: azure-devops-bench
-
-- if: steps.audit.outcome == 'failure'
-  run: exit 1
-```
-
-Alerts land against the synthetic path in each result's `physicalLocation`,
-not against a file in the repository, because a finding is a setting rather
-than a line of code. Verify that against your own repository before relying on
-it; `json` is the better input for a dashboard.
+Exit `2` covers a bad config or a rejected credential, an unknown `--project`
+or `--repository`, a control that failed to evaluate — and two scans that ran
+but cannot vouch for their coverage: one that **evaluated no repository** (a
+`--project` the token cannot read, a token that sees nothing, an organization
+whose every repository is disabled), and one that **could not list some
+project's repositories**, which are then missing from the report with no
+finding to say so. The report is still written, and says so itself: the SARIF
+run is marked unsuccessful with an error notification, and the JUnit file
+carries a failing `scan.coverage` case. `scan.allowIncomplete: true` accepts
+the second if you mean to.
 
 ### Splitting capture from evaluation
 

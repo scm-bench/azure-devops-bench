@@ -521,13 +521,104 @@ exceptions:
 
 ## 在 CI 中使用
 
+阈值写在与流水线一起提交的 `azure-devops-bench.yaml` 里，流水线和笔记本读的是同一个文件，
+两者在任何事情上都不会有分歧：
+
+```yaml
+# azure-devops-bench.yaml
+scan:
+  failOn: high
+  maxManual: 40
+```
+
+**Azure Pipelines** —— 结果通过 `PublishTestResults` 显示在运行的 *Tests* 标签页：
+
+```yaml
+- script: |
+    azure-devops-bench scan --url "$(System.CollectionUri)" \
+      -o junit --output-file "$(Agent.TempDirectory)/azure-devops-bench.xml"
+  displayName: Audit Azure DevOps
+  env:
+    AZURE_DEVOPS_TOKEN: $(AUDIT_TOKEN)   # 机密变量：PAT，或扫描用服务主体的 Entra token
+
+- task: PublishTestResults@2
+  condition: succeededOrFailed()
+  inputs:
+    testResultsFormat: JUnit
+    testResultsFiles: $(Agent.TempDirectory)/azure-devops-bench.xml
+    testRunTitle: azure-devops-bench
+    failTaskOnFailedTests: false   # the scan's exit code is the gate
+```
+
+token 是 PAT，或按 [token 需要什么权限](#token-需要什么权限) 配置好的服务主体的
+Microsoft Entra token。流水线自身的身份 `$(System.AccessToken)` 特意没有作为推荐：除非放宽过
+相应设置，它只限于流水线所在的项目；而它背后的构建服务身份能否读取本扫描依赖的权限、Graph 与
+授权 API，尚未经过验证。读不到时扫描输出 `MANUAL` 而不是错误的判定，所以尝试是安全的，但要
+预期会有缺口。机密变量只能像上面那样通过 `env:` 传给脚本。
+
+**GitHub Actions** —— 把 SARIF 上传到 code scanning。扫描发现问题时以 `1` 退出，这正是它的
+用意，但那样作业会在上传之前就结束；因此失败被推迟到最后一步。上传需要作业 `permissions` 中的
+`security-events: write`——在私有仓库中还需要 `actions: read` 与 `contents: read`。
+
+```yaml
+- name: Audit Azure DevOps
+  id: audit
+  continue-on-error: true
+  run: |
+    azure-devops-bench scan --url "${{ vars.AZURE_DEVOPS_URL }}" \
+      -o sarif --output-file azure-devops-bench.sarif
+  env:
+    AZURE_DEVOPS_TOKEN: ${{ secrets.AZURE_DEVOPS_TOKEN }}
+
+- name: Upload to code scanning
+  if: always()
+  uses: github/codeql-action/upload-sarif@v4
+  with:
+    sarif_file: azure-devops-bench.sarif
+    category: azure-devops-bench
+
+- name: Fail the job if the audit did
+  if: steps.audit.outcome == 'failure'
+  run: exit 1
+```
+
+告警会落在每个结果 `physicalLocation` 中的合成路径上，而不是仓库里的某个文件，因为发现是
+一项设置，而不是一行代码；如果是给仪表盘提供数据，`json` 是更好的输入。
+
+**Jenkins** —— JUnit 发布器在构建的测试视图里展示结果：
+
+```groovy
+stage('Audit Azure DevOps') {
+  steps {
+    withCredentials([string(credentialsId: 'azure-devops-bench-token', variable: 'AZURE_DEVOPS_TOKEN')]) {
+      sh '''
+        azure-devops-bench scan --url https://dev.azure.com/fabrikam \
+          -o junit --output-file azure-devops-bench.xml
+      '''
+    }
+  }
+  post {
+    always {
+      // Draws the report; the scan's exit code has already decided the build.
+      junit testResults: 'azure-devops-bench.xml', allowEmptyResults: true, skipMarkingBuildUnstable: true
+    }
+  }
+}
+```
+
+在每个示例中，**由扫描的退出码决定构建结果，报告只负责展示。** 测试报告承担不了关卡的职责：
+JUnit 没有严重度的概念，所以每个未被接受的 `FAIL` 都是一个失败的测试——包括 `LOW`——任由
+发布器因失败的测试让构建失败，等于按比 `failOn` 更严格的标准设卡。而丢掉扫描退出码，则会放过
+被突破的 `maxManual` 或 `failUnder`——要么是黄色构建（Jenkins 的 `junit` 步骤把失败的测试
+标为 `UNSTABLE` 而不是失败），要么在恰好没有测试失败时直接是绿色构建。
+
 退出码：
 
 | 退出码 | 含义 |
 |---|---|
 | `0` | 扫描完成，未触发任何阈值 |
 | `1` | 扫描完成，触发了某个阈值 |
-| `2` | 扫描无法为结果作保：配置或凭据有误、未知的 `--project`、某条规则评估出错、**一个仓库都没有评估**，或**有项目的仓库无法列出**（除非设置了 `scan.allowIncomplete`） |
+| `2` | 扫描无法完成——或无法为它的覆盖范围作保 |
 
 三项设置决定退出码 `1`，它们回答的是不同的问题：
 
@@ -537,53 +628,18 @@ exceptions:
 | `scan.failUnder` | 分数是否可以接受？0–100；`0` 关闭 |
 | `scan.maxManual` | 扫描看到的内容是否足以下结论？一个百分比；`-1` 关闭 |
 
+从 `failOn: high` 开始，在第一轮发现清理完之后再收紧；不会被清理的发现，交给[例外](#例外)。
+
 `scan.maxManual` 值得尽早设置。读不到的发现会被排除在分数之外，而不是计为失分——对单条规则
 是对的，汇总起来却会误导：丢了一个 scope 的 token 会缩小分母，分数可能比正常的 token 还*高*。
 `scan.failUnder` 抓不到这种情况，`scan.maxManual` 可以。
 
-**Azure Pipelines**，结果显示在运行的 *Tests* 标签页：
-
-```yaml
-- script: azure-devops-bench scan -o junit --output-file $(Agent.TempDirectory)/azure-devops-bench.xml
-  displayName: Audit Azure DevOps
-  env:
-    AZURE_DEVOPS_URL: $(System.CollectionUri)
-    # 一个保存 PAT 或 Entra token 的机密变量。$(System.AccessToken)
-    # 不行：构建身份的 token 读不了权限。
-    AZURE_DEVOPS_TOKEN: $(AUDIT_TOKEN)
-
-- task: PublishTestResults@2
-  condition: always()
-  inputs:
-    testResultsFormat: JUnit
-    testResultsFiles: $(Agent.TempDirectory)/azure-devops-bench.xml
-    testRunTitle: azure-devops-bench
-```
-
-**GitHub Actions**，结果显示在 code scanning 中：
-
-```yaml
-- name: Audit Azure DevOps
-  id: audit
-  continue-on-error: true   # 先上传报告，再让作业失败
-  run: azure-devops-bench scan -o sarif --output-file azure-devops-bench.sarif
-  env:
-    AZURE_DEVOPS_URL: https://dev.azure.com/fabrikam
-    AZURE_DEVOPS_TOKEN: ${{ secrets.AZURE_DEVOPS_TOKEN }}
-
-- uses: github/codeql-action/upload-sarif@v3
-  if: always()
-  with:
-    sarif_file: azure-devops-bench.sarif
-    category: azure-devops-bench
-
-- if: steps.audit.outcome == 'failure'
-  run: exit 1
-```
-
-告警会落在每个结果 `physicalLocation` 中的合成路径上，而不是仓库里的某个文件，因为发现是
-一项设置，而不是一行代码。依赖这一行为之前，请先在你自己的仓库上验证；如果是给仪表盘提供数据，
-`json` 是更好的输入。
+退出码 `2` 涵盖配置错误或凭据被拒绝、未知的 `--project` 或 `--repository`、某条规则评估出错
+——以及两种虽然跑完了、却无法为覆盖范围作保的扫描：**一个仓库都没有评估**（token 读不了的
+`--project`、什么都看不到的 token、所有仓库都被禁用的组织），以及**有项目的仓库无法列出**——
+这些仓库于是从报告中消失，且没有任何发现提到它们。报告仍会写出，并且自己会说明这一点：
+SARIF 运行被标记为不成功并附带一条错误通知，JUnit 文件里多出一个失败的 `scan.coverage` 用例。
+若确属有意，可用 `scan.allowIncomplete: true` 接受第二种情况。
 
 ### 把抓取与评估分开
 
