@@ -1,0 +1,1287 @@
+{
+  "schemaVersion": "2",
+  "metadata": {
+    "tool": "azure-devops-bench",
+    "toolVersion": "v0.1.0",
+    "platform": "azure-devops",
+    "baseUrl": "https://dev.azure.com/fabrikam",
+    "generatedAt": "2026-10-01T00:00:00Z",
+    "warnings": [
+      "group \"[fabrikam]\\Platform Engineers (Entra)\" is a Microsoft Entra group; Azure DevOps lists its members only once they have signed in, so counts derived from it are lower bounds"
+    ],
+    "deployment": "services",
+    "apiVersion": "7.1",
+    "authMethod": "entra"
+  },
+  "organization": {
+    "admins": [
+      {
+        "name": "[fabrikam]\\Project Collection Service Accounts",
+        "type": "group",
+        "permission": "Project Collection Administrators",
+        "active": true
+      },
+      {
+        "name": "dana@fabrikam.com",
+        "type": "user",
+        "permission": "Project Collection Administrators",
+        "active": true
+      },
+      {
+        "name": "hana@fabrikam.com",
+        "type": "user",
+        "permission": "Project Collection Administrators",
+        "active": true
+      },
+      {
+        "name": "ivan@fabrikam.com",
+        "type": "user",
+        "permission": "Project Collection Administrators",
+        "active": true
+      }
+    ],
+    "effectiveAdmins": {
+      "count": 3,
+      "complete": true,
+      "users": [
+        "dana@fabrikam.com",
+        "hana@fabrikam.com",
+        "ivan@fabrikam.com"
+      ],
+      "groups": [
+        "[fabrikam]\\Project Collection Service Accounts"
+      ],
+      "serviceIdentities": [
+        "Project Collection Build Service (fabrikam)"
+      ]
+    },
+    "users": [
+      {
+        "name": "alice@fabrikam.com",
+        "displayName": "Alice Moreau",
+        "emailAddress": "alice@fabrikam.com",
+        "active": true,
+        "licensed": true,
+        "createdEpoch": 1704067200,
+        "neverSignedIn": false,
+        "lastActivityEpoch": 1790553600,
+        "inactiveDays": 3,
+        "accessLevel": "express",
+        "ageDays": 1004
+      },
+      {
+        "name": "bob@fabrikam.com",
+        "displayName": "Bob Okafor",
+        "emailAddress": "bob@fabrikam.com",
+        "active": true,
+        "licensed": true,
+        "createdEpoch": 1704067200,
+        "neverSignedIn": false,
+        "lastActivityEpoch": 1789776000,
+        "inactiveDays": 12,
+        "accessLevel": "express",
+        "ageDays": 1004
+      },
+      {
+        "name": "chen@fabrikam.com",
+        "displayName": "Chen Wei",
+        "emailAddress": "chen@fabrikam.com",
+        "active": true,
+        "licensed": true,
+        "createdEpoch": 1735689600,
+        "neverSignedIn": false,
+        "lastActivityEpoch": 1772582400,
+        "inactiveDays": 211,
+        "accessLevel": "express",
+        "ageDays": 638
+      },
+      {
+        "name": "contractor@partner.example",
+        "displayName": "Pat Contractor",
+        "emailAddress": "contractor@partner.example",
+        "active": true,
+        "licensed": true,
+        "createdEpoch": 1776988800,
+        "neverSignedIn": true,
+        "lastActivityEpoch": 0,
+        "inactiveDays": -1,
+        "accessLevel": "express",
+        "guest": true,
+        "ageDays": 160
+      },
+      {
+        "name": "dana@fabrikam.com",
+        "displayName": "Dana Ruiz",
+        "emailAddress": "dana@fabrikam.com",
+        "active": true,
+        "licensed": true,
+        "createdEpoch": 1672531200,
+        "neverSignedIn": false,
+        "lastActivityEpoch": 1790726400,
+        "inactiveDays": 1,
+        "accessLevel": "express",
+        "ageDays": 1369
+      },
+      {
+        "name": "old.admin@fabrikam.com",
+        "displayName": "Former Admin",
+        "emailAddress": "old.admin@fabrikam.com",
+        "active": false,
+        "licensed": false,
+        "createdEpoch": 1609459200,
+        "neverSignedIn": false,
+        "lastActivityEpoch": 1730332800,
+        "inactiveDays": 700,
+        "accessLevel": "express",
+        "ageDays": 2099
+      }
+    ],
+    "available": {
+      "admins": true,
+      "users": true,
+      "userActivity": true,
+      "licensedUsers": true,
+      "repositoryCreators": true
+    },
+    "repositoryCreators": [
+      {
+        "project": "Fabrikam-Docs",
+        "principals": {
+          "count": 0,
+          "complete": true
+        },
+        "adminsExact": true
+      },
+      {
+        "project": "Fabrikam-Fiber",
+        "principals": {
+          "count": 2,
+          "complete": true,
+          "users": [
+            "bob@fabrikam.com",
+            "chen@fabrikam.com"
+          ],
+          "groups": [
+            "[Fabrikam-Fiber]\\Contributors"
+          ]
+        },
+        "adminsExact": true
+      }
+    ]
+  },
+  "projects": [
+    {
+      "key": "Fabrikam-Docs",
+      "name": "Fabrikam-Docs",
+      "public": true,
+      "permissions": {
+        "defaultPermissionKnown": false,
+        "publicAccess": true
+      },
+      "repositories": [
+        {
+          "slug": "handbook",
+          "name": "handbook",
+          "projectKey": "Fabrikam-Docs",
+          "fullName": "Fabrikam-Docs/handbook",
+          "public": true,
+          "archived": false,
+          "forkable": false,
+          "defaultBranch": "refs/heads/main",
+          "defaultBranchDisplay": "main",
+          "empty": false,
+          "pullRequestSettings": {
+            "requiredApprovers": 1,
+            "requiredAllApprovers": false,
+            "requiredAllTasksComplete": false,
+            "requiredSuccessfulBuilds": 0,
+            "unapproveOnUpdate": false,
+            "mergeStrategies": [
+              {
+                "id": "no-ff",
+                "name": "Basic merge (no fast-forward)",
+                "enabled": false
+              },
+              {
+                "id": "rebase-ff-only",
+                "name": "Rebase and fast-forward",
+                "enabled": false
+              },
+              {
+                "id": "rebase-no-ff",
+                "name": "Semi-linear merge",
+                "enabled": false
+              },
+              {
+                "id": "squash",
+                "name": "Squash merge",
+                "enabled": true
+              }
+            ],
+            "minimumApproverCount": 1
+          },
+          "branchRestrictions": [
+            {
+              "id": 0,
+              "type": "pull-request-only",
+              "matcherId": "refs/heads/main",
+              "matcherType": "BRANCH",
+              "matcherText": "main",
+              "scope": "PROJECT",
+              "matchesDefaultBranch": true,
+              "exemptPrincipals": {
+                "count": 0,
+                "complete": true
+              },
+              "derived": true,
+              "derivedFrom": [
+                "policy 51 Minimum number of reviewers (required, project-wide)",
+                "exempt: Bypass policies when pushing (PolicyExempt)"
+              ]
+            },
+            {
+              "id": 0,
+              "type": "no-deletes",
+              "matcherId": "refs/heads/main",
+              "matcherType": "BRANCH",
+              "matcherText": "main",
+              "scope": "PROJECT",
+              "matchesDefaultBranch": true,
+              "exemptPrincipals": {
+                "count": 0,
+                "complete": true
+              },
+              "derived": true,
+              "derivedFrom": [
+                "policy 51 Minimum number of reviewers (required, project-wide)",
+                "exempt: Force push (ForcePush) together with Bypass policies when pushing (PolicyExempt)"
+              ]
+            },
+            {
+              "id": 0,
+              "type": "fast-forward-only",
+              "matcherId": "refs/heads/main",
+              "matcherType": "BRANCH",
+              "matcherText": "main",
+              "scope": "PROJECT",
+              "matchesDefaultBranch": true,
+              "exemptPrincipals": {
+                "count": 0,
+                "complete": true
+              },
+              "derived": true,
+              "derivedFrom": [
+                "policy 51 Minimum number of reviewers (required, project-wide)",
+                "Azure Repos denies force push unless granted; exempt: Force push (ForcePush) together with Bypass policies when pushing (PolicyExempt)"
+              ]
+            }
+          ],
+          "branches": [
+            {
+              "id": "refs/heads/main",
+              "displayId": "main",
+              "isDefault": true,
+              "latestCommit": "8263e7232a2331c563d737e4fc4e9c66a8286c63",
+              "latestCommitEpoch": 1787356800,
+              "ageDays": 40
+            }
+          ],
+          "files": {
+            "securityPolicyPaths": [
+              ".github/SECURITY.md"
+            ],
+            "probed": [
+              "SECURITY.md",
+              ".github/SECURITY.md",
+              "docs/SECURITY.md",
+              "SECURITY.rst",
+              "SECURITY.txt",
+              "SECURITY"
+            ]
+          },
+          "permissions": {
+            "defaultPermissionKnown": true,
+            "publicAccess": true,
+            "everyoneGrants": [
+              {
+                "name": "[Fabrikam-Docs]\\Project Valid Users",
+                "type": "group",
+                "permission": "GenericRead"
+              }
+            ]
+          },
+          "admins": {
+            "count": 2,
+            "complete": true,
+            "users": [
+              "frank@fabrikam.com",
+              "gita@fabrikam.com"
+            ],
+            "groups": [
+              "[Fabrikam-Docs]\\Project Administrators"
+            ]
+          },
+          "available": {
+            "visibility": true,
+            "defaultBranch": true,
+            "branches": true,
+            "branchAges": true,
+            "pullRequestSettings": true,
+            "mergeStrategies": true,
+            "unapproveOnUpdate": true,
+            "requiredBuilds": true,
+            "branchRestrictions": true,
+            "files": true,
+            "permissions": true,
+            "admins": true,
+            "orgAdminsExact": true,
+            "deleters": true,
+            "bypass": true,
+            "advancedSecurity": true
+          },
+          "id": "4f1e2d3c-b5a6-4978-8a9b-0c1d2e3f4a5b",
+          "bypass": {
+            "push": {
+              "count": 0,
+              "complete": true
+            },
+            "pullRequest": {
+              "count": 0,
+              "complete": true
+            },
+            "admins": {
+              "count": 0,
+              "complete": true
+            }
+          },
+          "forcePushers": {
+            "count": 0,
+            "complete": true
+          },
+          "deleters": {
+            "count": 2,
+            "complete": true,
+            "users": [
+              "frank@fabrikam.com",
+              "gita@fabrikam.com"
+            ],
+            "groups": [
+              "[Fabrikam-Docs]\\Project Administrators"
+            ]
+          },
+          "advancedSecurity": {
+            "secretProtection": true,
+            "blockPushes": true,
+            "blockPushesKnown": true
+          },
+          "policies": [
+            {
+              "id": 51,
+              "type": "Minimum number of reviewers",
+              "typeId": "fa4e907d-c16b-4a4c-9dfa-4906e5d171dd",
+              "blocking": true,
+              "scope": "PROJECT",
+              "matchKind": "DefaultBranch"
+            }
+          ]
+        }
+      ],
+      "id": "8d2c5a1e-3b4f-4c6d-9e0a-1b2c3d4e5f60",
+      "visibility": "public"
+    },
+    {
+      "key": "Fabrikam-Fiber",
+      "name": "Fabrikam-Fiber",
+      "public": false,
+      "permissions": {
+        "defaultPermissionKnown": false,
+        "publicAccess": false
+      },
+      "repositories": [
+        {
+          "slug": "legacy-portal",
+          "name": "legacy-portal",
+          "projectKey": "Fabrikam-Fiber",
+          "fullName": "Fabrikam-Fiber/legacy-portal",
+          "public": false,
+          "archived": false,
+          "forkable": false,
+          "defaultBranch": "refs/heads/master",
+          "defaultBranchDisplay": "master",
+          "empty": false,
+          "pullRequestSettings": {
+            "requiredApprovers": 0,
+            "requiredAllApprovers": false,
+            "requiredAllTasksComplete": false,
+            "requiredSuccessfulBuilds": 0,
+            "unapproveOnUpdate": false,
+            "mergeStrategies": [
+              {
+                "id": "no-ff",
+                "name": "Basic merge (no fast-forward)",
+                "enabled": true
+              },
+              {
+                "id": "rebase-ff-only",
+                "name": "Rebase and fast-forward",
+                "enabled": true
+              },
+              {
+                "id": "rebase-no-ff",
+                "name": "Semi-linear merge",
+                "enabled": true
+              },
+              {
+                "id": "squash",
+                "name": "Squash merge",
+                "enabled": true
+              }
+            ]
+          },
+          "branchRestrictions": [
+            {
+              "id": 0,
+              "type": "fast-forward-only",
+              "matcherId": "refs/heads/master",
+              "matcherType": "BRANCH",
+              "matcherText": "master",
+              "scope": "REPOSITORY",
+              "matchesDefaultBranch": true,
+              "exemptUsers": [
+                "alice@fabrikam.com"
+              ],
+              "exemptPrincipals": {
+                "count": 1,
+                "complete": true,
+                "users": [
+                  "alice@fabrikam.com"
+                ]
+              },
+              "derived": true,
+              "derivedFrom": [
+                "Azure Repos denies force push unless granted; exempt: Force push (ForcePush)"
+              ]
+            }
+          ],
+          "requiredBuilds": [],
+          "branches": [
+            {
+              "id": "refs/heads/master",
+              "displayId": "master",
+              "isDefault": true,
+              "latestCommit": "ffe9cba521f00d7f60e322845072238635edb451",
+              "latestCommitEpoch": 1788220800,
+              "ageDays": 30
+            },
+            {
+              "id": "refs/heads/hotfix/2024-q1",
+              "displayId": "hotfix/2024-q1",
+              "isDefault": false,
+              "latestCommit": "917131a709996c5cfe188c3b57e9a6ad90e8b85c",
+              "latestCommitEpoch": 1741478400,
+              "ageDays": 571
+            },
+            {
+              "id": "refs/heads/spike/new-auth",
+              "displayId": "spike/new-auth",
+              "isDefault": false,
+              "latestCommit": "467ffea40b630e5252f6e727caa7919d5f7a9444",
+              "latestCommitEpoch": 1772496000,
+              "ageDays": 212
+            }
+          ],
+          "files": {
+            "probed": [
+              "SECURITY.md",
+              ".github/SECURITY.md",
+              "docs/SECURITY.md",
+              "SECURITY.rst",
+              "SECURITY.txt",
+              "SECURITY"
+            ]
+          },
+          "permissions": {
+            "defaultPermissionKnown": true,
+            "publicAccess": false,
+            "everyoneGrants": [
+              {
+                "name": "[Fabrikam-Fiber]\\Project Valid Users",
+                "type": "group",
+                "permission": "GenericContribute"
+              },
+              {
+                "name": "[Fabrikam-Fiber]\\Project Valid Users",
+                "type": "group",
+                "permission": "GenericRead"
+              }
+            ]
+          },
+          "admins": {
+            "count": 1,
+            "complete": true,
+            "users": [
+              "alice@fabrikam.com"
+            ]
+          },
+          "available": {
+            "visibility": true,
+            "defaultBranch": true,
+            "branches": true,
+            "branchAges": true,
+            "pullRequestSettings": true,
+            "mergeStrategies": true,
+            "unapproveOnUpdate": true,
+            "requiredBuilds": true,
+            "branchRestrictions": true,
+            "files": true,
+            "permissions": true,
+            "admins": true,
+            "orgAdminsExact": true,
+            "deleters": true,
+            "bypass": true,
+            "advancedSecurity": true
+          },
+          "id": "5febef5a-833d-4e14-b9c0-14cb638f91e6",
+          "bypass": {
+            "push": {
+              "count": 1,
+              "complete": true,
+              "users": [
+                "alice@fabrikam.com"
+              ]
+            },
+            "pullRequest": {
+              "count": 2,
+              "complete": true,
+              "users": [
+                "bob@fabrikam.com",
+                "chen@fabrikam.com"
+              ],
+              "groups": [
+                "[Fabrikam-Fiber]\\Release Managers"
+              ]
+            },
+            "admins": {
+              "count": 1,
+              "complete": true,
+              "users": [
+                "alice@fabrikam.com"
+              ]
+            }
+          },
+          "forcePushers": {
+            "count": 1,
+            "complete": true,
+            "users": [
+              "alice@fabrikam.com"
+            ]
+          },
+          "deleters": {
+            "count": 2,
+            "complete": true,
+            "users": [
+              "alice@fabrikam.com",
+              "bob@fabrikam.com"
+            ],
+            "groups": [
+              "[Fabrikam-Fiber]\\Release Managers"
+            ]
+          },
+          "advancedSecurity": {
+            "secretProtection": false,
+            "blockPushes": false,
+            "blockPushesKnown": true
+          },
+          "policies": [
+            {
+              "id": 31,
+              "type": "Minimum number of reviewers",
+              "typeId": "fa4e907d-c16b-4a4c-9dfa-4906e5d171dd",
+              "blocking": false,
+              "scope": "REPOSITORY",
+              "matchKind": "Exact"
+            },
+            {
+              "id": 32,
+              "type": "Work item linking",
+              "typeId": "40e92b44-2fe1-4dd6-b3d8-74a9c21d0c6e",
+              "blocking": false,
+              "scope": "REPOSITORY",
+              "matchKind": "Exact"
+            }
+          ]
+        },
+        {
+          "slug": "notification-service",
+          "name": "notification-service",
+          "projectKey": "Fabrikam-Fiber",
+          "fullName": "Fabrikam-Fiber/notification-service",
+          "public": false,
+          "archived": false,
+          "forkable": false,
+          "defaultBranch": "",
+          "defaultBranchDisplay": "",
+          "empty": true,
+          "pullRequestSettings": {
+            "requiredApprovers": 0,
+            "requiredAllApprovers": false,
+            "requiredAllTasksComplete": false,
+            "requiredSuccessfulBuilds": 0,
+            "unapproveOnUpdate": false
+          },
+          "files": {},
+          "permissions": {
+            "defaultPermissionKnown": true,
+            "publicAccess": false
+          },
+          "admins": {
+            "count": 2,
+            "complete": true,
+            "users": [
+              "dana@fabrikam.com",
+              "erik@fabrikam.com"
+            ],
+            "groups": [
+              "[Fabrikam-Fiber]\\Project Administrators"
+            ]
+          },
+          "available": {
+            "visibility": true,
+            "defaultBranch": true,
+            "branches": true,
+            "branchAges": true,
+            "files": true,
+            "permissions": true,
+            "admins": true,
+            "orgAdminsExact": true,
+            "deleters": true,
+            "bypass": false,
+            "advancedSecurity": true
+          },
+          "id": "9a3b4c5d-6e7f-4a8b-9c0d-1e2f3a4b5c6d",
+          "bypass": {
+            "push": {
+              "count": 0,
+              "complete": false
+            },
+            "pullRequest": {
+              "count": 0,
+              "complete": false
+            },
+            "admins": {
+              "count": 0,
+              "complete": false
+            }
+          },
+          "forcePushers": {
+            "count": 0,
+            "complete": false
+          },
+          "deleters": {
+            "count": 2,
+            "complete": true,
+            "users": [
+              "dana@fabrikam.com",
+              "erik@fabrikam.com"
+            ],
+            "groups": [
+              "[Fabrikam-Fiber]\\Project Administrators"
+            ]
+          },
+          "advancedSecurity": {
+            "secretProtection": true,
+            "blockPushes": true,
+            "blockPushesKnown": true
+          }
+        },
+        {
+          "slug": "payments-api",
+          "name": "payments-api",
+          "projectKey": "Fabrikam-Fiber",
+          "fullName": "Fabrikam-Fiber/payments-api",
+          "public": false,
+          "archived": false,
+          "forkable": false,
+          "defaultBranch": "refs/heads/main",
+          "defaultBranchDisplay": "main",
+          "empty": false,
+          "pullRequestSettings": {
+            "requiredApprovers": 2,
+            "requiredAllApprovers": false,
+            "requiredAllTasksComplete": true,
+            "requiredSuccessfulBuilds": 2,
+            "unapproveOnUpdate": true,
+            "mergeStrategies": [
+              {
+                "id": "no-ff",
+                "name": "Basic merge (no fast-forward)",
+                "enabled": false
+              },
+              {
+                "id": "rebase-ff-only",
+                "name": "Rebase and fast-forward",
+                "enabled": true
+              },
+              {
+                "id": "rebase-no-ff",
+                "name": "Semi-linear merge",
+                "enabled": false
+              },
+              {
+                "id": "squash",
+                "name": "Squash merge",
+                "enabled": true
+              }
+            ],
+            "minimumApproverCount": 2,
+            "lastPusherCannotApprove": true,
+            "workItemLinkingRequired": true,
+            "requiredReviewers": [
+              {
+                "id": 17,
+                "blocking": true,
+                "minimumApprovers": 1,
+                "pathFilters": [
+                  "/src/ledger/*"
+                ],
+                "reviewers": [
+                  "1d1dad71-f27c-4370-810d-838ec41efd41"
+                ]
+              }
+            ]
+          },
+          "branchRestrictions": [
+            {
+              "id": 0,
+              "type": "pull-request-only",
+              "matcherId": "refs/heads/main",
+              "matcherType": "BRANCH",
+              "matcherText": "main",
+              "scope": "PROJECT",
+              "matchesDefaultBranch": true,
+              "exemptPrincipals": {
+                "count": 0,
+                "complete": true
+              },
+              "derived": true,
+              "derivedFrom": [
+                "policy 12 Minimum number of reviewers (required, project-wide)",
+                "policy 13 Comment requirements (required, project-wide)",
+                "policy 14 Work item linking (required, project-wide)",
+                "policy 15 Require a merge strategy (required, project-wide)",
+                "policy 21 Build (required)",
+                "policy 22 Status (required)",
+                "exempt: Bypass policies when pushing (PolicyExempt)"
+              ]
+            },
+            {
+              "id": 0,
+              "type": "no-deletes",
+              "matcherId": "refs/heads/main",
+              "matcherType": "BRANCH",
+              "matcherText": "main",
+              "scope": "PROJECT",
+              "matchesDefaultBranch": true,
+              "exemptPrincipals": {
+                "count": 0,
+                "complete": true
+              },
+              "derived": true,
+              "derivedFrom": [
+                "policy 12 Minimum number of reviewers (required, project-wide)",
+                "policy 13 Comment requirements (required, project-wide)",
+                "policy 14 Work item linking (required, project-wide)",
+                "policy 15 Require a merge strategy (required, project-wide)",
+                "policy 21 Build (required)",
+                "policy 22 Status (required)",
+                "exempt: Force push (ForcePush) together with Bypass policies when pushing (PolicyExempt)"
+              ]
+            },
+            {
+              "id": 0,
+              "type": "fast-forward-only",
+              "matcherId": "refs/heads/main",
+              "matcherType": "BRANCH",
+              "matcherText": "main",
+              "scope": "PROJECT",
+              "matchesDefaultBranch": true,
+              "exemptPrincipals": {
+                "count": 0,
+                "complete": true
+              },
+              "derived": true,
+              "derivedFrom": [
+                "policy 12 Minimum number of reviewers (required, project-wide)",
+                "policy 13 Comment requirements (required, project-wide)",
+                "policy 14 Work item linking (required, project-wide)",
+                "policy 15 Require a merge strategy (required, project-wide)",
+                "policy 21 Build (required)",
+                "policy 22 Status (required)",
+                "Azure Repos denies force push unless granted; exempt: Force push (ForcePush) together with Bypass policies when pushing (PolicyExempt)"
+              ]
+            }
+          ],
+          "requiredBuilds": [
+            {
+              "id": 21,
+              "buildParentKeys": [
+                "5"
+              ],
+              "matcherId": "refs/heads/main",
+              "matcherType": "BRANCH",
+              "matcherText": "main",
+              "matchesDefaultBranch": true,
+              "kind": "build",
+              "name": "payments-api CI",
+              "expiresOnTargetUpdate": true
+            },
+            {
+              "id": 22,
+              "matcherId": "refs/heads/main",
+              "matcherType": "BRANCH",
+              "matcherText": "main",
+              "matchesDefaultBranch": true,
+              "kind": "status",
+              "name": "security/verify-signatures"
+            }
+          ],
+          "branches": [
+            {
+              "id": "refs/heads/main",
+              "displayId": "main",
+              "isDefault": true,
+              "latestCommit": "23d0bc5b128a10056dc68afece360d8a0fabb014",
+              "latestCommitEpoch": 1790640000,
+              "ageDays": 2
+            },
+            {
+              "id": "refs/heads/feature/refunds",
+              "displayId": "feature/refunds",
+              "isDefault": false,
+              "latestCommit": "67cae2b029dff7eb3dc062b49403aaedca5bad8d",
+              "latestCommitEpoch": 1790035200,
+              "ageDays": 9
+            }
+          ],
+          "files": {
+            "securityPolicyPaths": [
+              "SECURITY.md"
+            ],
+            "probed": [
+              "SECURITY.md",
+              ".github/SECURITY.md",
+              "docs/SECURITY.md",
+              "SECURITY.rst",
+              "SECURITY.txt",
+              "SECURITY"
+            ]
+          },
+          "permissions": {
+            "defaultPermissionKnown": true,
+            "publicAccess": false,
+            "everyoneGrants": [
+              {
+                "name": "[Fabrikam-Fiber]\\Project Valid Users",
+                "type": "group",
+                "permission": "GenericRead"
+              }
+            ]
+          },
+          "admins": {
+            "count": 2,
+            "complete": true,
+            "users": [
+              "dana@fabrikam.com",
+              "erik@fabrikam.com"
+            ],
+            "groups": [
+              "[Fabrikam-Fiber]\\Project Administrators"
+            ]
+          },
+          "available": {
+            "visibility": true,
+            "defaultBranch": true,
+            "branches": true,
+            "branchAges": true,
+            "pullRequestSettings": true,
+            "mergeStrategies": true,
+            "unapproveOnUpdate": true,
+            "requiredBuilds": true,
+            "branchRestrictions": true,
+            "files": true,
+            "permissions": true,
+            "admins": true,
+            "orgAdminsExact": true,
+            "deleters": true,
+            "bypass": true,
+            "advancedSecurity": true
+          },
+          "id": "278d5cd2-584d-4b63-824a-2ba458937249",
+          "bypass": {
+            "push": {
+              "count": 0,
+              "complete": true
+            },
+            "pullRequest": {
+              "count": 0,
+              "complete": true
+            },
+            "admins": {
+              "count": 0,
+              "complete": true
+            }
+          },
+          "forcePushers": {
+            "count": 1,
+            "complete": true,
+            "users": [
+              "dana@fabrikam.com"
+            ]
+          },
+          "deleters": {
+            "count": 2,
+            "complete": true,
+            "users": [
+              "dana@fabrikam.com",
+              "erik@fabrikam.com"
+            ],
+            "groups": [
+              "[Fabrikam-Fiber]\\Project Administrators"
+            ]
+          },
+          "advancedSecurity": {
+            "secretProtection": true,
+            "blockPushes": true,
+            "blockPushesKnown": true,
+            "codeSecurity": true,
+            "codeQL": true,
+            "dependencyScanning": true
+          },
+          "policies": [
+            {
+              "id": 12,
+              "type": "Minimum number of reviewers",
+              "typeId": "fa4e907d-c16b-4a4c-9dfa-4906e5d171dd",
+              "blocking": true,
+              "scope": "PROJECT",
+              "matchKind": "DefaultBranch"
+            },
+            {
+              "id": 13,
+              "type": "Comment requirements",
+              "typeId": "c6a1889d-b943-4856-b76f-9e46bb6b0df2",
+              "blocking": true,
+              "scope": "PROJECT",
+              "matchKind": "DefaultBranch"
+            },
+            {
+              "id": 14,
+              "type": "Work item linking",
+              "typeId": "40e92b44-2fe1-4dd6-b3d8-74a9c21d0c6e",
+              "blocking": true,
+              "scope": "PROJECT",
+              "matchKind": "DefaultBranch"
+            },
+            {
+              "id": 15,
+              "type": "Require a merge strategy",
+              "typeId": "fa4e907d-c16b-4a4c-9dfa-4916e5d171ab",
+              "blocking": true,
+              "scope": "PROJECT",
+              "matchKind": "DefaultBranch"
+            },
+            {
+              "id": 17,
+              "type": "Required reviewers",
+              "typeId": "fd2167ab-b0be-447a-8ec8-39368250530e",
+              "blocking": true,
+              "scope": "REPOSITORY",
+              "matchKind": "Exact"
+            },
+            {
+              "id": 21,
+              "type": "Build",
+              "typeId": "0609b952-1397-4640-95ec-e00a01b2c241",
+              "blocking": true,
+              "scope": "REPOSITORY",
+              "matchKind": "Exact"
+            },
+            {
+              "id": 22,
+              "type": "Status",
+              "typeId": "cbdc66da-9728-4af8-aada-9a5a32e4a226",
+              "blocking": true,
+              "scope": "REPOSITORY",
+              "matchKind": "Exact"
+            }
+          ]
+        },
+        {
+          "slug": "shared-infra",
+          "name": "shared-infra",
+          "projectKey": "Fabrikam-Fiber",
+          "fullName": "Fabrikam-Fiber/shared-infra",
+          "public": false,
+          "archived": false,
+          "forkable": false,
+          "defaultBranch": "refs/heads/main",
+          "defaultBranchDisplay": "main",
+          "empty": false,
+          "pullRequestSettings": {
+            "requiredApprovers": 1,
+            "requiredAllApprovers": false,
+            "requiredAllTasksComplete": true,
+            "requiredSuccessfulBuilds": 0,
+            "unapproveOnUpdate": true,
+            "mergeStrategies": [
+              {
+                "id": "no-ff",
+                "name": "Basic merge (no fast-forward)",
+                "enabled": false
+              },
+              {
+                "id": "rebase-ff-only",
+                "name": "Rebase and fast-forward",
+                "enabled": false
+              },
+              {
+                "id": "rebase-no-ff",
+                "name": "Semi-linear merge",
+                "enabled": false
+              },
+              {
+                "id": "squash",
+                "name": "Squash merge",
+                "enabled": true
+              }
+            ],
+            "minimumApproverCount": 2,
+            "authorApprovalCounts": true,
+            "resetRejectionsOnSourcePush": true
+          },
+          "branchRestrictions": [
+            {
+              "id": 0,
+              "type": "pull-request-only",
+              "matcherId": "refs/heads/main",
+              "matcherType": "BRANCH",
+              "matcherText": "main",
+              "scope": "REPOSITORY",
+              "matchesDefaultBranch": true,
+              "exemptPrincipals": {
+                "count": 0,
+                "complete": false,
+                "groups": [
+                  "[fabrikam]\\Platform Engineers (Entra)"
+                ]
+              },
+              "derived": true,
+              "derivedFrom": [
+                "policy 41 Minimum number of reviewers (required)",
+                "exempt: Bypass policies when pushing (PolicyExempt)"
+              ],
+              "exemptGroups": [
+                "[fabrikam]\\Platform Engineers (Entra)"
+              ]
+            },
+            {
+              "id": 0,
+              "type": "no-deletes",
+              "matcherId": "refs/heads/main",
+              "matcherType": "BRANCH",
+              "matcherText": "main",
+              "scope": "REPOSITORY",
+              "matchesDefaultBranch": true,
+              "exemptPrincipals": {
+                "count": 0,
+                "complete": true
+              },
+              "derived": true,
+              "derivedFrom": [
+                "policy 41 Minimum number of reviewers (required)",
+                "exempt: Force push (ForcePush) together with Bypass policies when pushing (PolicyExempt)"
+              ]
+            },
+            {
+              "id": 0,
+              "type": "fast-forward-only",
+              "matcherId": "refs/heads/main",
+              "matcherType": "BRANCH",
+              "matcherText": "main",
+              "scope": "REPOSITORY",
+              "matchesDefaultBranch": true,
+              "exemptPrincipals": {
+                "count": 0,
+                "complete": true
+              },
+              "derived": true,
+              "derivedFrom": [
+                "policy 41 Minimum number of reviewers (required)",
+                "Azure Repos denies force push unless granted; exempt: Force push (ForcePush) together with Bypass policies when pushing (PolicyExempt)"
+              ]
+            }
+          ],
+          "requiredBuilds": [
+            {
+              "id": 42,
+              "buildParentKeys": [
+                "9"
+              ],
+              "matcherId": "refs/heads/main",
+              "matcherType": "BRANCH",
+              "matcherText": "main",
+              "matchesDefaultBranch": true,
+              "kind": "build",
+              "name": "terraform plan",
+              "conditional": true,
+              "pathFilters": [
+                "/modules/*"
+              ],
+              "expiresOnTargetUpdate": true
+            }
+          ],
+          "branches": [
+            {
+              "id": "refs/heads/main",
+              "displayId": "main",
+              "isDefault": true,
+              "latestCommit": "6c3e1b0f9a2d4e5f8a7b9c0d1e2f3a4b5c6d7e8f",
+              "latestCommitEpoch": 1790380800,
+              "ageDays": 5
+            },
+            {
+              "id": "refs/heads/renovate/azurerm-4.x",
+              "displayId": "renovate/azurerm-4.x",
+              "isDefault": false,
+              "latestCommit": "0a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d",
+              "latestCommitEpoch": 0,
+              "ageDays": -1
+            }
+          ],
+          "files": {
+            "probed": [
+              "SECURITY.md",
+              ".github/SECURITY.md",
+              "docs/SECURITY.md",
+              "SECURITY.rst",
+              "SECURITY.txt",
+              "SECURITY"
+            ]
+          },
+          "permissions": {
+            "defaultPermissionKnown": true,
+            "publicAccess": false
+          },
+          "admins": {
+            "count": 1,
+            "complete": false,
+            "users": [
+              "dana@fabrikam.com"
+            ],
+            "groups": [
+              "[fabrikam]\\Platform Engineers (Entra)"
+            ]
+          },
+          "available": {
+            "visibility": true,
+            "defaultBranch": true,
+            "branches": true,
+            "branchAges": false,
+            "pullRequestSettings": true,
+            "mergeStrategies": true,
+            "unapproveOnUpdate": true,
+            "requiredBuilds": true,
+            "branchRestrictions": true,
+            "files": false,
+            "permissions": true,
+            "admins": true,
+            "orgAdminsExact": true,
+            "deleters": true,
+            "bypass": true,
+            "advancedSecurity": true
+          },
+          "errors": [
+            "commit dates unavailable for some branches; the stale-branch rule reports MANUAL",
+            "browse /: GET /fabrikam/6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c/_apis/git/repositories/66efb083-777a-4cac-a350-a24b046be6be/items: 403 TF401027: You need the Git 'GenericRead' permission to perform this action."
+          ],
+          "id": "66efb083-777a-4cac-a350-a24b046be6be",
+          "bypass": {
+            "push": {
+              "count": 0,
+              "complete": false,
+              "groups": [
+                "[fabrikam]\\Platform Engineers (Entra)"
+              ]
+            },
+            "pullRequest": {
+              "count": 0,
+              "complete": false,
+              "groups": [
+                "[fabrikam]\\Platform Engineers (Entra)"
+              ]
+            },
+            "admins": {
+              "count": 0,
+              "complete": false
+            }
+          },
+          "forcePushers": {
+            "count": 0,
+            "complete": true
+          },
+          "deleters": {
+            "count": 1,
+            "complete": false,
+            "users": [
+              "dana@fabrikam.com"
+            ],
+            "groups": [
+              "[fabrikam]\\Platform Engineers (Entra)"
+            ]
+          },
+          "advancedSecurity": {
+            "secretProtection": true,
+            "blockPushes": false,
+            "blockPushesKnown": false
+          },
+          "policies": [
+            {
+              "id": 41,
+              "type": "Minimum number of reviewers",
+              "typeId": "fa4e907d-c16b-4a4c-9dfa-4906e5d171dd",
+              "blocking": true,
+              "scope": "REPOSITORY",
+              "matchKind": "Exact"
+            },
+            {
+              "id": 42,
+              "type": "Build",
+              "typeId": "0609b952-1397-4640-95ec-e00a01b2c241",
+              "blocking": true,
+              "scope": "REPOSITORY",
+              "matchKind": "Exact"
+            },
+            {
+              "id": 43,
+              "type": "Comment requirements",
+              "typeId": "c6a1889d-b943-4856-b76f-9e46bb6b0df2",
+              "blocking": true,
+              "scope": "REPOSITORY",
+              "matchKind": "Exact"
+            },
+            {
+              "id": 44,
+              "type": "Require a merge strategy",
+              "typeId": "fa4e907d-c16b-4a4c-9dfa-4916e5d171ab",
+              "blocking": true,
+              "scope": "REPOSITORY",
+              "matchKind": "Exact"
+            }
+          ]
+        }
+      ],
+      "id": "6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c",
+      "visibility": "private"
+    }
+  ]
+}
