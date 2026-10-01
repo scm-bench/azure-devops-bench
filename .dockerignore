@@ -1,0 +1,15 @@
+# `COPY . .` puts the build context into the build stage, and its layers stay
+# in the local build cache. Keep out what git keeps out: build output, and the
+# recon captures, snapshots and reports that describe a real organization.
+.git
+bin/
+dist/
+hack/recon/out/
+coverage.out
+coverage.html
+**/*.snapshot.json
+**/snapshot.json
+**/report.json
+**/report.sarif
+# The bundled sample is synthetic, and the binary embeds it.
+!examples/snapshot.json
