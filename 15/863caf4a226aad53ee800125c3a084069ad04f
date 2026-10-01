@@ -1,0 +1,54 @@
+internal/scm/azuredevops/testdata/learn/README.md
+  s_48d8fa1c49bfb6::t_bd4a9245040b44 1-35
+internal/scm/azuredevops/testdata/learn/identities-by-name.json
+  s_48d8fa1c49bfb6::t_a49a6a844f9b8f 1-72
+internal/scm/azuredevops/testdata/learn/acl-filter-by-descriptors.json
+  s_48d8fa1c49bfb6::t_8960dee3410ab5 1-60
+internal/scm/azuredevops/testdata/learn/identities-by-subject-descriptors.json
+  s_48d8fa1c49bfb6::t_9c9863d1a9f020 1-138
+internal/scm/azuredevops/testdata/learn/acl-extended-info.json
+  s_48d8fa1c49bfb6::t_3cc57bdf20b2cd 1-36
+internal/scm/azuredevops/testdata/learn/refs-list.json
+  s_48d8fa1c49bfb6::t_b496b078df7bff 1-131
+internal/scm/azuredevops/testdata/learn/stats-branches.json
+  s_48d8fa1c49bfb6::t_f4e3ffe4030edf 1-76
+internal/scm/azuredevops/fetcher_test.go
+  s_48d8fa1c49bfb6::t_8d1edab224cc54 1-939
+  s_48d8fa1c49bfb6::t_61b24c1396662f 940-1054
+internal/scm/azuredevops/fake_test.go
+  s_48d8fa1c49bfb6::t_cccdbbe0aa2586 1-766
+  s_48d8fa1c49bfb6::t_72a1aa19b9172a 767-772
+internal/scm/azuredevops/client_test.go
+  s_48d8fa1c49bfb6::t_cdb1f2d31439be 1-546
+  s_48d8fa1c49bfb6::t_7fe43847e638fb 547-549
+internal/scm/azuredevops/testdata/learn/identities-by-descriptors.json
+  s_48d8fa1c49bfb6::t_d3f089621a91b3 1-138
+internal/scm/azuredevops/testdata/learn/repositories-list.json
+  s_48d8fa1c49bfb6::t_2e63662b64d494 1-43
+internal/scm/azuredevops/testdata/learn/repository-get.json
+  s_48d8fa1c49bfb6::t_2ebdd57edc1d3f 1-40
+internal/scm/azuredevops/testdata/learn/graph-memberships-down.json
+  s_48d8fa1c49bfb6::t_678c8189729774 1-9
+internal/scm/azuredevops/testdata/learn/policy-configurations-list.json
+  s_48d8fa1c49bfb6::t_b7b3b5cb0d3684 1-140
+internal/scm/azuredevops/testdata/learn/items-scope-path.json
+  s_48d8fa1c49bfb6::t_505882b4758a90 1-12
+internal/scm/azuredevops/testdata/learn/projects-list.json
+  s_48d8fa1c49bfb6::t_c02db65f4442d9 1-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "15863caf4a226aad53ee800125c3a084069ad04f",
+  "prompts": {},
+  "sessions": {
+    "s_48d8fa1c49bfb6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b91ffb09-1c76-4e54-9777-4525648b2969",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Xianpeng Shen <xianpeng.shen@gmail.com>"
+    }
+  }
+}
