@@ -1,0 +1,26 @@
+hack/recon/probe.sh
+  s_48d8fa1c49bfb6::t_60d3061603614c 1-478
+  s_48d8fa1c49bfb6::t_481c5e4fcb4920 479-497
+hack/recon/probe_test.go
+  s_48d8fa1c49bfb6::t_97b038bceb0431 1-419,433,436,439-440
+  s_48d8fa1c49bfb6::t_ab0b85218a517b 420-432,434-435,437-438,441-447
+hack/recon/README.md
+  s_48d8fa1c49bfb6::t_3b716314791644 1-191
+  s_48d8fa1c49bfb6::t_1e8a618d797afa 192
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "cedd2df898141fcdc4a17a1fcda4be3723bb01e4",
+  "prompts": {},
+  "sessions": {
+    "s_48d8fa1c49bfb6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b91ffb09-1c76-4e54-9777-4525648b2969",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Xianpeng Shen <xianpeng.shen@gmail.com>"
+    }
+  }
+}
