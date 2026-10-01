@@ -1,0 +1,17 @@
+{
+  "id": "CIS-1.3.7",
+  "cisId": "1.3.7",
+  "package": "scmbench.rules.cis_1_3_7",
+  "scope": "repository",
+  "severity": "LOW",
+  "platforms": ["azure-devops"],
+  "automated": true,
+  "title": "Ensure a minimum number of administrators are set for the repository",
+  "description": "A repository with one administrator is one whose settings become unmaintainable the moment that person is unavailable — and whose permissions nobody else can restore. Administrators here are the people who hold Manage permissions on the repository — Project Administrators by inheritance, and anyone granted it — not counting Project Collection Administrators, who can administer everything and would otherwise make this pass on every repository of any organization that has two of them.",
+  "remediation": "Project settings -> Repositories -> <repository> -> Security: grant \"Manage permissions\" to at least one more trusted maintainer, or add maintainers to the project's Project Administrators group (Project settings -> Permissions), which holds it on every repository in the project. Adjust the minimum with thresholds.minRepositoryAdmins in azure-devops-bench's config.",
+  "fixSummary": "Grant \"Manage permissions\" to a second maintainer at Project settings -> Repositories -> Security.",
+  "references": [
+    "https://www.cisecurity.org/benchmark/software-supply-chain-security",
+    "https://learn.microsoft.com/en-us/azure/devops/repos/git/set-git-repository-permissions"
+  ]
+}

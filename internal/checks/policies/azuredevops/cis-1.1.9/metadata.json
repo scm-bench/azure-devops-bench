@@ -1,0 +1,17 @@
+{
+  "id": "CIS-1.1.9",
+  "cisId": "1.1.9",
+  "package": "scmbench.rules.cis_1_1_9",
+  "scope": "repository",
+  "severity": "HIGH",
+  "platforms": ["azure-devops"],
+  "automated": true,
+  "title": "Ensure all checks have passed before merging new code",
+  "description": "A pipeline that runs but cannot block a merge is decoration. Tests, linters and security scans only reduce risk if a red result stops the pull request. A path-filtered build or a conditional status check gates only some pull requests, so it does not meet this control on its own.",
+  "remediation": "Project settings -> Repositories -> <repository> -> Policies -> Branch Policies -> <default branch> -> Build validation -> +: add the CI pipeline with Policy requirement Required and no path filter. A Status check (Status checks -> +) that is Required, set to \"Apply by default\" and not path-filtered also counts. To cover every repository, add the build validation on the project-wide policy at Project settings -> Repositories -> All Repositories -> Policies -> Branch Policies.",
+  "fixSummary": "Add a required, unfiltered build at Project settings -> Repositories -> <repo> -> Policies.",
+  "references": [
+    "https://www.cisecurity.org/benchmark/software-supply-chain-security",
+    "https://learn.microsoft.com/en-us/azure/devops/repos/git/branch-policies#set-build-validation"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "CIS-1.1.4",
+  "cisId": "1.1.4",
+  "package": "scmbench.rules.cis_1_1_4",
+  "scope": "repository",
+  "severity": "MEDIUM",
+  "platforms": ["azure-devops"],
+  "automated": true,
+  "title": "Ensure previous approvals are dismissed when new changes are pushed",
+  "description": "Without this, an author can collect approvals on a harmless diff and then push anything they like to the same branch before completing. The approval no longer refers to the code that ships.",
+  "remediation": "Project settings -> Repositories -> <repository> -> Policies -> Branch Policies -> <default branch> -> Require a minimum number of reviewers: under \"When new changes are pushed\", select \"Reset all approval votes (does not reset votes to reject or wait)\" or \"Reset all code reviewer votes\". \"Require at least one approval on the last iteration\" alone keeps every earlier approval standing and does not meet this control. Set it on the project-wide policy at Project settings -> Repositories -> All Repositories -> Policies -> Branch Policies to cover every repository.",
+  "fixSummary": "Reset approval votes on push at Project settings -> Repositories -> <repo> -> Policies.",
+  "references": [
+    "https://www.cisecurity.org/benchmark/software-supply-chain-security",
+    "https://learn.microsoft.com/en-us/azure/devops/repos/git/branch-policies#require-a-minimum-number-of-reviewers"
+  ]
+}

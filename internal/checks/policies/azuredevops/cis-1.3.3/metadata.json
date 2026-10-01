@@ -1,0 +1,17 @@
+{
+  "id": "CIS-1.3.3",
+  "cisId": "1.3.3",
+  "package": "scmbench.rules.cis_1_3_3",
+  "scope": "organization",
+  "severity": "HIGH",
+  "platforms": ["azure-devops"],
+  "automated": true,
+  "title": "Ensure a minimum number of administrators are set for the organization",
+  "description": "Project Collection Administrators can change any permission, bypass any policy and read any repository in the organization; organization owners are members automatically. Too few is a lockout risk; too many multiplies the accounts whose compromise ends the discussion. People are counted; build services and service principals in the group are listed but not counted.",
+  "remediation": "Organization settings -> Permissions -> Project Collection Administrators -> Members: remove the people who no longer need organization-wide administration, keeping at least two so a lost account cannot lock the organization out. Prefer Project Administrators for project-level work. A Microsoft Entra group in the membership is expanded only as far as Azure DevOps knows it — members appear once they have signed in — so review it in Entra as well. Adjust the range with thresholds.minOrgAdmins and thresholds.maxOrgAdmins in azure-devops-bench's config.",
+  "fixSummary": "Review members at Organization settings -> Permissions -> Project Collection Administrators.",
+  "references": [
+    "https://www.cisecurity.org/benchmark/software-supply-chain-security",
+    "https://learn.microsoft.com/en-us/azure/devops/organizations/security/look-up-project-collection-administrators"
+  ]
+}

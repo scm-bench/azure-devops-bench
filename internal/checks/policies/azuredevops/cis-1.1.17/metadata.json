@@ -1,0 +1,17 @@
+{
+  "id": "CIS-1.1.17",
+  "cisId": "1.1.17",
+  "package": "scmbench.rules.cis_1_1_17",
+  "scope": "repository",
+  "severity": "MEDIUM",
+  "platforms": ["azure-devops"],
+  "automated": true,
+  "title": "Ensure branch deletions are denied",
+  "description": "Deleting a protected branch removes both the code and the protections attached to it; recreating it restores neither. Azure Repos refuses to delete a branch with a Required policy, except for holders of both \"Force push (rewrite history and delete branches)\" and \"Bypass policies when pushing\". Without a required policy, anyone with Force push — including the branch's creator — can delete it.",
+  "remediation": "Add a Required branch policy to the default branch at Project settings -> Repositories -> <repository> -> Policies -> Branch Policies -> <default branch> (or for every repository at Project settings -> Repositories -> All Repositories -> Policies -> Branch Policies -> + -> \"Protect the default branch of each repository\"): Azure Repos then refuses to delete it. Review who holds both Force push and \"Bypass policies when pushing\" at Repos -> Branches -> <default branch> -> More options -> Branch security; they can still delete it. allowedBypassPrincipals and thresholds.maxBypassPrincipals work as for CIS-1.1.15.",
+  "fixSummary": "Add a required branch policy at Project settings -> Repositories -> <repo> -> Policies.",
+  "references": [
+    "https://www.cisecurity.org/benchmark/software-supply-chain-security",
+    "https://learn.microsoft.com/en-us/azure/devops/repos/git/branch-policies"
+  ]
+}

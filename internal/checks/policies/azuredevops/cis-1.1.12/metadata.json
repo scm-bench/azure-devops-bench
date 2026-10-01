@@ -1,0 +1,17 @@
+{
+  "id": "CIS-1.1.12",
+  "cisId": "1.1.12",
+  "package": "scmbench.rules.cis_1_1_12",
+  "scope": "repository",
+  "severity": "MEDIUM",
+  "platforms": ["azure-devops"],
+  "automated": true,
+  "title": "Ensure verification of signed commits for new changes before merging",
+  "description": "Git commit authorship is self-asserted: anyone who can push can claim to be anyone. Azure Repos cannot verify a signature itself — it has no signature policy, no server-side hook, and the commits it creates on merge are unsigned — so the only enforcement is a service that verifies every commit of a pull request and posts a status that a Required status policy waits for.",
+  "remediation": "Run a service or pipeline that verifies the signature of every commit in a pull request and posts a pull request status, then require it: Project settings -> Repositories -> <repository> -> Policies -> Branch Policies -> <default branch> -> Status checks -> +, Policy requirement Required, \"Apply by default\", no path filter. Name that status in signatureStatusChecks in azure-devops-bench's config (\"genre/name\" or \"name\"); until one is named this control fails, because nothing else on Azure Repos can verify a signature. Allow only \"Rebase and fast-forward\" merges (Limit merge types), since the merge and squash commits Azure DevOps creates are unsigned.",
+  "fixSummary": "Require a signature-verifying status at Project settings -> Repositories -> <repo> -> Policies.",
+  "references": [
+    "https://www.cisecurity.org/benchmark/software-supply-chain-security",
+    "https://learn.microsoft.com/en-us/azure/devops/repos/git/pr-status-policy"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "CIS-1.5.1",
+  "cisId": "1.5.1",
+  "package": "scmbench.rules.cis_1_5_1",
+  "scope": "repository",
+  "severity": "MEDIUM",
+  "platforms": ["azure-devops"],
+  "automated": true,
+  "title": "Ensure scanners are in place to identify and prevent sensitive data in code",
+  "description": "A secret pushed to a repository is exposed to everyone who can read it, and stays in its history after the fix. GitHub Advanced Security for Azure DevOps can reject a push that contains a secret — the only server-side prevention Azure Repos offers. It is a paid add-on available on Azure DevOps Services only; elsewhere this control needs a person.",
+  "remediation": "Project settings -> Repositories -> <repository> -> Settings -> Advanced Security: turn on Secret Protection, and \"Block secrets on push\". Organization settings -> Repositories can turn it on for every repository, and for new ones automatically. On Azure DevOps Server, which has no Advanced Security, run a secret scanner as a required build validation instead and review this control by hand.",
+  "fixSummary": "Turn on \"Block secrets on push\" at Project settings -> Repositories -> <repo> -> Settings.",
+  "references": [
+    "https://www.cisecurity.org/benchmark/software-supply-chain-security",
+    "https://learn.microsoft.com/en-us/azure/devops/repos/security/github-advanced-security-secret-scanning"
+  ]
+}

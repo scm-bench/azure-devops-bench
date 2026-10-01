@@ -1,0 +1,17 @@
+{
+  "id": "CIS-1.1.15",
+  "cisId": "1.1.15",
+  "package": "scmbench.rules.cis_1_1_15",
+  "scope": "repository",
+  "severity": "HIGH",
+  "platforms": ["azure-devops"],
+  "automated": true,
+  "title": "Ensure pushing or merging of new code is restricted to trusted users",
+  "description": "Every approval rule on pull requests is worth nothing if the same people can push straight to the branch instead. Azure Repos declares no such restriction: a branch with any Required branch policy accepts changes only through pull requests, except from holders of \"Bypass policies when pushing\" — so whether a required policy applies, and who holds that bypass, decide this control together.",
+  "remediation": "Configure at least one Required branch policy on the default branch — Project settings -> Repositories -> <repository> -> Policies -> Branch Policies -> <default branch> — which makes Azure Repos accept changes only through pull requests; to cover every repository, add one at Project settings -> Repositories -> All Repositories -> Policies -> Branch Policies -> + -> \"Protect the default branch of each repository\". Then review who holds \"Bypass policies when pushing\" at Project settings -> Repositories -> <repository> -> Security and at the branch's Branch security: each holder can push past every policy. Name the service identities that genuinely need it in allowedBypassPrincipals; thresholds.maxBypassPrincipals sets how many others may hold it (-1 turns the check off).",
+  "fixSummary": "Add a required policy, revoke push bypass at Project settings -> Repositories -> <repo>.",
+  "references": [
+    "https://www.cisecurity.org/benchmark/software-supply-chain-security",
+    "https://learn.microsoft.com/en-us/azure/devops/repos/git/branch-policies"
+  ]
+}

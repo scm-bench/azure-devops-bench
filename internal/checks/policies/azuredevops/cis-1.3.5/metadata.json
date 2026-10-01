@@ -1,0 +1,17 @@
+{
+  "id": "CIS-1.3.5",
+  "cisId": "1.3.5",
+  "package": "scmbench.rules.cis_1_3_5",
+  "scope": "organization",
+  "severity": "HIGH",
+  "platforms": ["azure-devops"],
+  "automated": false,
+  "title": "Ensure multi-factor authentication is enforced for the organization",
+  "description": "Not observable through Azure DevOps: Azure DevOps Services signs users in through Microsoft Entra ID, where multi-factor authentication is a Conditional Access policy, and Azure DevOps Server through Active Directory. Neither is readable through the Azure DevOps API, so a verdict from Azure DevOps data alone would be invented.",
+  "remediation": "Require MFA with a Microsoft Entra Conditional Access policy that covers the Azure DevOps application (Entra admin center -> Protection -> Conditional Access), then turn on Organization settings -> Policies -> \"Enable IP Conditional Access policy validation on non-interactive flows\" so the policy also governs personal access tokens and SSH. On Azure DevOps Server, enforce MFA in the Active Directory or AD FS sign-in in front of it.",
+  "fixSummary": "Require MFA with Conditional Access at Entra admin center -> Protection -> Conditional Access.",
+  "references": [
+    "https://www.cisecurity.org/benchmark/software-supply-chain-security",
+    "https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/change-application-access-policies"
+  ]
+}

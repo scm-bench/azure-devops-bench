@@ -1,0 +1,17 @@
+{
+  "id": "CIS-1.1.2",
+  "cisId": "1.1.2",
+  "package": "scmbench.rules.cis_1_1_2",
+  "scope": "repository",
+  "severity": "LOW",
+  "platforms": ["azure-devops"],
+  "automated": true,
+  "title": "Ensure any change to code can be traced back to its associated task",
+  "description": "A change that lands without a work item has no recorded reason: nobody can later tell which requirement, bug or incident it answered, or whether it was ever asked for. Azure Repos can refuse to complete a pull request that links no work item, which is the enforceable form of this control.",
+  "remediation": "Project settings -> Repositories -> <repository> -> Policies -> Branch Policies -> <default branch>: set \"Check for linked work items\" to On and Required. Optional only warns and still lets the pull request complete. To cover every repository at once, including ones created later, add it at Project settings -> Repositories -> All Repositories -> Policies -> Branch Policies -> + -> \"Protect the default branch of each repository\".",
+  "fixSummary": "Require linked work items at Project settings -> Repositories -> <repo> -> Policies.",
+  "references": [
+    "https://www.cisecurity.org/benchmark/software-supply-chain-security",
+    "https://learn.microsoft.com/en-us/azure/devops/repos/git/branch-policies#require-linked-work-items"
+  ]
+}

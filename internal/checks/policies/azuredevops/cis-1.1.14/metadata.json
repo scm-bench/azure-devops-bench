@@ -1,0 +1,17 @@
+{
+  "id": "CIS-1.1.14",
+  "cisId": "1.1.14",
+  "package": "scmbench.rules.cis_1_1_14",
+  "scope": "repository",
+  "severity": "MEDIUM",
+  "platforms": ["azure-devops"],
+  "automated": true,
+  "title": "Ensure branch protection rules are enforced for administrators",
+  "description": "Protection that administrators can walk past is protection for everyone else. On Azure Repos, an administrator who holds \"Bypass policies when pushing\" or \"Bypass policies when completing pull requests\" on the default branch is not bound by its policies. Administrators here are Project Collection Administrators and whoever holds Manage permissions on the repository. They can always grant themselves a bypass; this control asks that none is held now.",
+  "remediation": "Project settings -> Repositories -> <repository> -> Security, the All Repositories level above it, and Repos -> Branches -> <default branch> -> More options -> Branch security: set \"Bypass policies when pushing\" and \"Bypass policies when completing pull requests\" to Not set for Project Collection Administrators, Project Administrators and every administrator listed. Keep the grant for emergencies only, and remove it afterwards. Name a service identity that is an administrator and genuinely needs a bypass in allowedBypassPrincipals.",
+  "fixSummary": "Remove administrators' bypass at Project settings -> Repositories -> <repo> -> Security.",
+  "references": [
+    "https://www.cisecurity.org/benchmark/software-supply-chain-security",
+    "https://learn.microsoft.com/en-us/azure/devops/repos/git/branch-policies#allow-policy-bypass-when-needed"
+  ]
+}

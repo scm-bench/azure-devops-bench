@@ -1,0 +1,17 @@
+{
+  "id": "CIS-1.3.9",
+  "cisId": "1.3.9",
+  "package": "scmbench.rules.cis_1_3_9",
+  "scope": "organization",
+  "severity": "LOW",
+  "platforms": ["azure-devops"],
+  "automated": false,
+  "title": "Ensure the organization is verified",
+  "description": "Not applicable to Azure DevOps: verification badges prove ownership of a public organization identity on hosted platforms that have one, and Azure DevOps has no such badge. Carried as an explicit NA so the mapping is documented rather than missing.",
+  "remediation": "No action applies: Azure DevOps has no organization verification badge. The nearest equivalent is connecting the organization to your own Microsoft Entra tenant at Organization settings -> Microsoft Entra, which ties every identity in it to a directory you control.",
+  "fixSummary": "No action applies; connect your tenant at Organization settings -> Microsoft Entra.",
+  "references": [
+    "https://www.cisecurity.org/benchmark/software-supply-chain-security",
+    "https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/connect-organization-to-azure-ad"
+  ]
+}

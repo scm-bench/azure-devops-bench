@@ -1,0 +1,17 @@
+{
+  "id": "CIS-1.1.5",
+  "cisId": "1.1.5",
+  "package": "scmbench.rules.cis_1_1_5",
+  "scope": "repository",
+  "severity": "MEDIUM",
+  "platforms": ["azure-devops"],
+  "automated": true,
+  "title": "Ensure there are restrictions on who can dismiss code change reviews",
+  "description": "Azure Repos has no separate \"dismiss review\"; the equivalent is completing a pull request past the policies that should have stopped it, which is what \"Bypass policies when completing pull requests\" allows. Whoever holds it on the default branch can merge without the approvals, builds and checks every other control here requires. By default no group holds it, so every holder is a deliberate grant.",
+  "remediation": "Project settings -> Repositories -> <repository> -> Security, and Repos -> Branches -> <default branch> -> More options -> Branch security: set \"Bypass policies when completing pull requests\" to Not set (or Deny) for every user and group that does not need it. Check Project settings -> Repositories -> All Repositories -> Security as well, which every repository inherits. Name the service identities that genuinely need it in allowedBypassPrincipals; thresholds.maxBypassPrincipals sets how many others may hold it (-1 turns the check off).",
+  "fixSummary": "Revoke \"Bypass policies when completing pull requests\" at Project settings -> Repositories.",
+  "references": [
+    "https://www.cisecurity.org/benchmark/software-supply-chain-security",
+    "https://learn.microsoft.com/en-us/azure/devops/repos/git/branch-policies#allow-policy-bypass-when-needed"
+  ]
+}
