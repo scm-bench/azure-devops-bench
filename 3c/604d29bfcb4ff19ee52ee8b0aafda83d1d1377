@@ -1,0 +1,57 @@
+.github/dependabot.yml
+  s_48d8fa1c49bfb6::t_9896d5c6015715 1-28
+.github/release.yml
+  s_48d8fa1c49bfb6::t_de6af7bf40b274 1-78
+.github/workflows/ci.yml
+  s_48d8fa1c49bfb6::t_b92a20b9358712 1-22
+.github/workflows/labels.yml
+  s_66212c309e21f0::t_dde3410eea961f 1-24
+.github/workflows/links.yml
+  s_66212c309e21f0::t_746845efb78db6 1-27
+.github/workflows/release.yml
+  s_48d8fa1c49bfb6::t_322cbb5dfc5943 1-42
+.gitignore
+  s_48d8fa1c49bfb6::t_5194f7013ad3cc 1-36
+.goreleaser.yaml
+  s_48d8fa1c49bfb6::t_d16499fb2d5a46 1-230
+Dockerfile
+  s_48d8fa1c49bfb6::t_33a7bd3e437afb 1-39
+Dockerfile.goreleaser
+  s_48d8fa1c49bfb6::t_13458cd62d5c7b 1-14
+Makefile
+  s_48d8fa1c49bfb6::t_cf48ca9c99e837 1-99
+go.mod
+  s_48d8fa1c49bfb6::t_8d6482deed50ad 1-56
+go.sum
+  s_48d8fa1c49bfb6::t_b18686aa71d27a 1-140
+internal/console/console.go
+  s_48d8fa1c49bfb6::t_9f4f4a05ac8c91 1-232
+internal/console/console_test.go
+  s_66212c309e21f0::t_a8957d00f4c453 1-413
+internal/console/table.go
+  s_66212c309e21f0::t_0716b81da9c0d1 1-342
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "3c604d29bfcb4ff19ee52ee8b0aafda83d1d1377",
+  "prompts": {},
+  "sessions": {
+    "s_48d8fa1c49bfb6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b91ffb09-1c76-4e54-9777-4525648b2969",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Xianpeng Shen <xianpeng.shen@gmail.com>"
+    },
+    "s_66212c309e21f0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8763d161-5362-48a1-ae9b-11f7bcd83469",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Xianpeng Shen <xianpeng.shen@gmail.com>"
+    }
+  }
+}
