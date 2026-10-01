@@ -29,6 +29,12 @@ Azure DevOps Server 2022+ 集合）的快照，用 Rego 编写的策略进行判
 **v0.1** 映射了 24 条规则：21 条自动判定；另有 3 条以「明确记录的人工检查」形式保留，
 使映射关系完整，而不是悄悄地只做一半。
 
+> **目前只在替身环境上验证过，尚未对真实组织验证。** fetcher 的测试对象是一个依据微软公开的
+> API 样例搭建的替身组织；它还没有对真实的 Azure DevOps Services 组织或 Server 集合做过
+> 端到端运行。替身中凡是建立在文档未明确之处的推断，都被设计成：一旦推断有误，输出 `MANUAL`
+> 而不是错误的 `PASS`。[`hack/recon`](hack/recon/README.md) 是逐条核实这些推断的只读探针；
+> 验证过的版本会列在这里。
+
 本仓库是 [scm-bench](https://github.com/scm-bench/scm-bench) 家族中负责 Azure DevOps 的那一个。
 家族里每个工具审计一个平台，并以同样的形态输出报告。它实现了家族的
 [bench contract](https://github.com/scm-bench/scm-bench/blob/main/docs/bench-contract.md)

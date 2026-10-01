@@ -35,6 +35,15 @@ repository at once.
 documented manual checks so the mapping is complete rather than quietly
 partial.
 
+> **Verified so far against a stand-in, not a live organization.** The fetcher
+> is tested against a stand-in organization built from Microsoft's published
+> API samples; it has not yet been run end to end against a real Azure DevOps
+> Services organization or Server collection. Where the stand-in rests on an
+> inference the documentation does not settle, the inference is built to yield
+> `MANUAL` rather than a false `PASS` if it is wrong.
+> [`hack/recon`](hack/recon/README.md) is the read-only probe that will check
+> each one; the versions verified will be listed here.
+
 This is the Azure DevOps bench of [scm-bench](https://github.com/scm-bench/scm-bench),
 a family of tools that audit one platform each and report in the same shape.
 It implements the family's
