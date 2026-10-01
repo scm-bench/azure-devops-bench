@@ -474,6 +474,8 @@ func TestUnknownCheckIDIsRejected(t *testing.T) {
 				t.Error("engine.New accepted a check ID that is not in the bundle")
 			} else if !strings.Contains(err.Error(), "azure-devops-bench list-checks") {
 				t.Errorf("error = %v", err)
+			} else if name == "exception" && !strings.Contains(err.Error(), "exceptions[0]: control CIS-1.1.31") {
+				t.Errorf("the error does not name the exception entry: %v", err)
 			}
 		})
 	}

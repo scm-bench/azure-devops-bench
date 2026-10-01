@@ -183,13 +183,9 @@ func validateSelection(cfg config.Config, bundle *checks.Bundle) error {
 		known[strings.ToUpper(c.ID)] = true
 	}
 
-	excepted := make([]string, 0, len(cfg.Exceptions))
-	for _, ex := range cfg.Exceptions {
-		excepted = append(excepted, ex.Control)
-	}
-
+	var problems []string
 	var unknown []string
-	for _, list := range [][]string{cfg.Include, cfg.Exclude, excepted} {
+	for _, list := range [][]string{cfg.Include, cfg.Exclude} {
 		for _, id := range list {
 			id = strings.TrimSpace(id)
 			if id == "" || known[strings.ToUpper(id)] {
@@ -198,12 +194,22 @@ func validateSelection(cfg config.Config, bundle *checks.Bundle) error {
 			unknown = append(unknown, id)
 		}
 	}
-	if len(unknown) == 0 {
+	if len(unknown) > 0 {
+		sort.Strings(unknown)
+		problems = append(problems, "unknown check ID(s) in include/exclude: "+strings.Join(unknown, ", "))
+	}
+	// An exception is named by its position, as every other exception error
+	// is, so the entry to fix is unambiguous in a long list.
+	for i, ex := range cfg.Exceptions {
+		if id := strings.TrimSpace(ex.Control); id != "" && !known[strings.ToUpper(id)] {
+			problems = append(problems, fmt.Sprintf("exceptions[%d]: control %s is not one this bench has", i, id))
+		}
+	}
+	if len(problems) == 0 {
 		return nil
 	}
-	sort.Strings(unknown)
-	return fmt.Errorf("unknown check ID(s) in include/exclude/exceptions: %s; run `azure-devops-bench list-checks` for the %d valid IDs",
-		strings.Join(unknown, ", "), len(bundle.Checks))
+	return fmt.Errorf("%s; run `azure-devops-bench list-checks` for the %d valid IDs",
+		strings.Join(problems, "; "), len(bundle.Checks))
 }
 
 // Evaluate runs every selected control against every resource in the snapshot.
