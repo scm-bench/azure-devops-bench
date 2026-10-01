@@ -1,0 +1,25 @@
+internal/scm/gitperms.go
+  s_48d8fa1c49bfb6::t_876f324764b609 1-56
+internal/scm/snapshot_test.go
+  s_48d8fa1c49bfb6::t_9d999a5a8b72b9 22-139
+  s_48d8fa1c49bfb6::t_5dc8fc279c09e4 1-21,140-175
+internal/scm/snapshot.go
+  s_48d8fa1c49bfb6::t_a0b330cb72d7e6 6-458
+  s_48d8fa1c49bfb6::t_025d8303f82b4d 1-5,459-472
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "b44ccdf0d4142e2b157f225ca08dc4c5a4b30016",
+  "prompts": {},
+  "sessions": {
+    "s_48d8fa1c49bfb6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b91ffb09-1c76-4e54-9777-4525648b2969",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Xianpeng Shen <xianpeng.shen@gmail.com>"
+    }
+  }
+}
