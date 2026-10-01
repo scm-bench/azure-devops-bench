@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/http/httptest"
+	"net/url"
 	"slices"
 	"strings"
 	"sync"
@@ -1050,5 +1052,24 @@ func TestAnEmptyProjectACLIsUnreadableNotPermissive(t *testing.T) {
 	// The other project is unaffected.
 	if main := findRepo(t, s, "Fabrikam-Fiber-Git/Fabrikam-Fiber-Git"); !main.Available["bypass"] {
 		t.Error("an empty ACL in one project must not blind the others")
+	}
+}
+
+// A Server behind an internal CA the scan was not told about fails at the
+// preflight, once, and says which setting fixes it.
+func TestAnUntrustedServerCertificateNamesCAFile(t *testing.T) {
+	srv := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		writeJSON(w, http.StatusOK, collection([]any{}))
+	}))
+	defer srv.Close()
+	u, _ := url.Parse(srv.URL + "/DefaultCollection")
+	client, err := NewClient(Options{Endpoint: &Endpoint{Deployment: scm.DeploymentServer, Organization: "DefaultCollection", Core: u, Identity: u}, Token: "pat-secret-value", MaxRetries: 3})
+	if err != nil {
+		t.Fatal(err)
+	}
+	client.sleep = func(context.Context, time.Duration) error { return nil }
+	_, err = NewFetcher(client, config.Default()).Fetch(context.Background(), FetchOptions{Now: testNow})
+	if err == nil || !strings.Contains(err.Error(), "scan.caFile") {
+		t.Errorf("err = %v", err)
 	}
 }

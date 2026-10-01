@@ -6,6 +6,8 @@ package azuredevops
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -488,6 +490,12 @@ func (c *Client) get(ctx context.Context, svc Service, path string, query url.Va
 				return nil, ctx.Err()
 			}
 			c.emit(ctx, req.Method, svc, endpoint, query, 0, time.Since(started), attempt, err, nil)
+			// A certificate nobody vouches for fails the same way the third
+			// time; retrying it only made a misconfiguration take seconds of
+			// backoff to report.
+			if deterministic(err) {
+				return nil, fmt.Errorf("GET %s: %w", endpoint.Path, err)
+			}
 			lastErr = fmt.Errorf("GET %s: %w", endpoint.Path, err)
 			continue
 		}
@@ -553,6 +561,19 @@ func redirectDetail(from *url.URL, location string) string {
 		return fmt.Sprintf("a redirect to a sign-in page (%s): the credential was not accepted", clean)
 	}
 	return fmt.Sprintf("a redirect to %s (not followed)", clean)
+}
+
+// deterministic reports whether a transport error will recur on retry: a
+// certificate the client does not trust, or one issued for another name.
+func deterministic(err error) bool {
+	var unknownAuthority x509.UnknownAuthorityError
+	var hostname x509.HostnameError
+	var invalid x509.CertificateInvalidError
+	var verification *tls.CertificateVerificationError
+	return errors.As(err, &unknownAuthority) ||
+		errors.As(err, &hostname) ||
+		errors.As(err, &invalid) ||
+		errors.As(err, &verification)
 }
 
 func isJSONContentType(value string) bool {

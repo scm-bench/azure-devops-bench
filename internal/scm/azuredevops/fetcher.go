@@ -243,6 +243,10 @@ func (f *Fetcher) verifyCredentials(ctx context.Context) error {
 	case isAPIVersionError(err):
 		return fmt.Errorf("%s does not speak REST api-version 7.0 or 7.1: %w\n"+
 			"azure-devops-bench needs Azure DevOps Services or Azure DevOps Server 2022 or later", f.client.BaseURL(), err)
+	case deterministic(err):
+		return fmt.Errorf("could not verify the certificate of %s: %w\n"+
+			"for an Azure DevOps Server behind an internal certificate authority, name its CA in scan.caFile, "+
+			"a PEM bundle added to the system roots", f.client.BaseURL(), err)
 	default:
 		return fmt.Errorf("could not reach %s: %w", f.client.BaseURL(), err)
 	}

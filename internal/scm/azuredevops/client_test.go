@@ -349,6 +349,31 @@ func TestTransportErrorsAreRetried(t *testing.T) {
 	}
 }
 
+// A certificate the client does not trust is deterministic: the second and
+// third attempts fail exactly like the first, so it is reported at once.
+func TestAnUntrustedCertificateIsNotRetried(t *testing.T) {
+	srv := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprint(w, `{"count":0,"value":[]}`)
+	}))
+	defer srv.Close()
+	u, _ := url.Parse(srv.URL + "/org")
+	c, err := NewClient(Options{Endpoint: &Endpoint{Deployment: "server", Core: u, Identity: u}, Token: "pat", MaxRetries: 3})
+	if err != nil {
+		t.Fatal(err)
+	}
+	c.sleep = func(context.Context, time.Duration) error { return nil }
+	var attempts []int
+	c.onRequest = func(e RequestEvent) { attempts = append(attempts, e.Attempt) }
+	_, err = c.get(context.Background(), ServiceCore, "/_apis/x", nil)
+	if err == nil || !strings.Contains(err.Error(), "certificate") {
+		t.Fatalf("err = %v", err)
+	}
+	if len(attempts) != 1 {
+		t.Errorf("attempts = %v; an untrusted certificate was retried", attempts)
+	}
+}
+
 func TestAServiceTheDeploymentLacksIsAnError(t *testing.T) {
 	c := newTestClient(t, func(http.ResponseWriter, *http.Request) {})
 	if _, err := c.get(context.Background(), ServiceAdvancedSecurity, "/_apis/x", nil); err == nil {
