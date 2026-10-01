@@ -333,6 +333,16 @@ func runScan(cmd *cobra.Command, opts *scanOptions) error {
 		return err
 	}
 
+	// The engine is built before anything is fetched. An include, exclude or
+	// exception naming no control is a configuration error, and finding it
+	// after a full network scan of a large organization wastes the scan.
+	// Every snapshot this build accepts is an Azure DevOps one (parseSnapshot
+	// refuses the rest), so the platform is known now.
+	eng, err := engine.New(ctx, cfg, scm.PlatformAzureDevOps)
+	if err != nil {
+		return err
+	}
+
 	// A whole-scan deadline is opt-in: how long is too long depends entirely
 	// on how big the organization is.
 	if opts.scan.MaxDuration.Get() > 0 {
@@ -424,10 +434,6 @@ func runScan(cmd *cobra.Command, opts *scanOptions) error {
 		}
 	}
 
-	eng, err := engine.New(ctx, cfg, snapshot.Metadata.Platform)
-	if err != nil {
-		return err
-	}
 	rep, err := eng.Evaluate(ctx, snapshot)
 	if err != nil {
 		return err

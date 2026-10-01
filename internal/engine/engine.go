@@ -126,7 +126,10 @@ func New(ctx context.Context, cfg config.Config, platform string) (*Engine, erro
 	// A check ID that names nothing is almost always a typo, and the silent
 	// reading of it is the dangerous one: an `exclude` that matches no control
 	// leaves that control running, and an `include` that matches none would
-	// narrow the scan to nothing. Both look like a successful scan.
+	// narrow the scan to nothing. Both look like a successful scan. An
+	// exception naming no control fails safe — it accepts nothing — but only
+	// after a red pipeline sends someone hunting for why the exception they
+	// can see in the file did not apply.
 	if err := validateSelection(cfg, bundle); err != nil {
 		return nil, err
 	}
@@ -180,8 +183,13 @@ func validateSelection(cfg config.Config, bundle *checks.Bundle) error {
 		known[strings.ToUpper(c.ID)] = true
 	}
 
+	excepted := make([]string, 0, len(cfg.Exceptions))
+	for _, ex := range cfg.Exceptions {
+		excepted = append(excepted, ex.Control)
+	}
+
 	var unknown []string
-	for _, list := range [][]string{cfg.Include, cfg.Exclude} {
+	for _, list := range [][]string{cfg.Include, cfg.Exclude, excepted} {
 		for _, id := range list {
 			id = strings.TrimSpace(id)
 			if id == "" || known[strings.ToUpper(id)] {
@@ -194,7 +202,7 @@ func validateSelection(cfg config.Config, bundle *checks.Bundle) error {
 		return nil
 	}
 	sort.Strings(unknown)
-	return fmt.Errorf("unknown check ID(s) in include/exclude: %s; run `azure-devops-bench list-checks` for the %d valid IDs",
+	return fmt.Errorf("unknown check ID(s) in include/exclude/exceptions: %s; run `azure-devops-bench list-checks` for the %d valid IDs",
 		strings.Join(unknown, ", "), len(bundle.Checks))
 }
 

@@ -387,3 +387,22 @@ func TestAScanOfNoRepositoryFailsInTheReportToo(t *testing.T) {
 		t.Errorf("JUnit does not fail the run:\n%s", junit)
 	}
 }
+
+// An exception naming no control — CIS-1.1.31 for CIS-1.1.13 — is refused
+// before the organization is contacted, as an include or exclude typo is.
+// It would fail safe, accepting nothing, but only after a full scan and a red
+// pipeline sent someone hunting for why the exception in the file did not
+// apply.
+func TestAnExceptionForAnUnknownControlIsRefusedBeforeScanning(t *testing.T) {
+	fake := &fakeCollection{methods: map[string]int{}}
+	srv := httptest.NewServer(fake)
+	defer srv.Close()
+	cfg := configWithExceptions(t, "  - control: CIS-1.1.31\n    resources: [PRJ/*]\n    reason: typo\n    expires: 2999-12-31\n")
+	_, _, err := runRoot(t, "scan", "--url", srv.URL+"/DefaultCollection", "--token", "pat-value", "-c", cfg)
+	if ExitCode(err) != ExitError || err == nil || !strings.Contains(err.Error(), "CIS-1.1.31") {
+		t.Fatalf("err = %v", err)
+	}
+	if len(fake.methods) != 0 {
+		t.Errorf("the organization was contacted before the config was refused: %v", fake.methods)
+	}
+}

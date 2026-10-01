@@ -463,6 +463,9 @@ func TestUnknownCheckIDIsRejected(t *testing.T) {
 	for name, mutate := range map[string]func(*config.Config){
 		"exclude": func(c *config.Config) { c.Exclude = []string{"CIS-9.9.9"} },
 		"include": func(c *config.Config) { c.Include = []string{"CIS-1.1.3", "CIS-0.0.0"} },
+		"exception": func(c *config.Config) {
+			c.Exceptions = []config.Exception{{Control: "CIS-1.1.31", Resources: []string{"*/*"}, Reason: "typo", Expires: "2099-01-01"}}
+		},
 	} {
 		t.Run(name, func(t *testing.T) {
 			cfg := config.Default()
@@ -473,6 +476,18 @@ func TestUnknownCheckIDIsRejected(t *testing.T) {
 				t.Errorf("error = %v", err)
 			}
 		})
+	}
+}
+
+// IDs are matched as include and exclude match them, ignoring case and
+// surrounding space, and the exceptions themselves are applied the same way:
+// validation and application must agree about what is known.
+func TestKnownCheckIDsAreAcceptedWhateverTheirSpelling(t *testing.T) {
+	cfg := config.Default()
+	cfg.Exclude = []string{"  cis-1.1.3  "}
+	cfg.Exceptions = []config.Exception{{Control: " cis-1.1.13 ", Resources: []string{"*/*"}, Reason: "migration", Expires: "2099-01-01"}}
+	if _, err := engine.New(context.Background(), cfg, scm.PlatformAzureDevOps); err != nil {
+		t.Errorf("a valid ID with different case and padding was rejected: %v", err)
 	}
 }
 
