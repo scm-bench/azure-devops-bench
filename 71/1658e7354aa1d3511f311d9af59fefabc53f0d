@@ -1,0 +1,27 @@
+internal/scm/azuredevops/tls.go
+  s_48d8fa1c49bfb6::t_44b4cc33ad3642 1-42
+  s_48d8fa1c49bfb6::t_f4a6f5adb36df5 43-47
+internal/scm/azuredevops/client.go
+  s_48d8fa1c49bfb6::t_6177343953d5c0 1-859,866
+  s_48d8fa1c49bfb6::t_1912ce37c87332 860-865,867-871
+internal/scm/azuredevops/models.go
+  s_48d8fa1c49bfb6::t_7db857dc4f9197 1-352
+internal/scm/azuredevops/endpoint.go
+  s_48d8fa1c49bfb6::t_545c785ff1d98c 1-238
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "711658e7354aa1d3511f311d9af59fefabc53f0d",
+  "prompts": {},
+  "sessions": {
+    "s_48d8fa1c49bfb6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b91ffb09-1c76-4e54-9777-4525648b2969",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Xianpeng Shen <xianpeng.shen@gmail.com>"
+    }
+  }
+}
