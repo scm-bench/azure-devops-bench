@@ -63,6 +63,10 @@ type Options struct {
 	Notice string
 }
 
+// noRepositoryEvaluated is what the machine-read formats say about a scan
+// whose repository controls audited nothing; the CLI exits 2 on the same fact.
+const noRepositoryEvaluated = "the scan evaluated no repository, so the repository controls audited nothing"
+
 // DefaultMaxResources is how many resources get a table. Zero means all of
 // them, and that is the default because each table is now a resource's whole
 // verdict rather than a list that could be trimmed: capping it by default would

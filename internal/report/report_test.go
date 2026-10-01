@@ -65,8 +65,9 @@ func sampleReport() *engine.Report {
 			BaseURL: "https://dev.azure.com/fabrikam", GeneratedAt: time.Date(2026, 1, 1, 12, 0, 0, 0, time.UTC),
 			Warnings: []string{"the user directory is not readable"},
 		},
-		Findings: findings,
-		Score:    engine.Compute(findings),
+		Findings:     findings,
+		Score:        engine.Compute(findings),
+		Repositories: 1,
 	}
 }
 
@@ -101,9 +102,10 @@ func reportWithUnreadableResource(t *testing.T, ids ...string) *engine.Report {
 	}
 
 	return &engine.Report{
-		Metadata: scm.Metadata{Tool: "azure-devops-bench", Platform: scm.PlatformAzureDevOps},
-		Findings: findings,
-		Score:    engine.Compute(findings),
+		Metadata:     scm.Metadata{Tool: "azure-devops-bench", Platform: scm.PlatformAzureDevOps},
+		Findings:     findings,
+		Score:        engine.Compute(findings),
+		Repositories: 1,
 	}
 }
 
@@ -136,9 +138,10 @@ func reportWithRepeatedFinding(t *testing.T, n int) *engine.Report {
 	}
 
 	return &engine.Report{
-		Metadata: scm.Metadata{Tool: "azure-devops-bench", Platform: scm.PlatformAzureDevOps},
-		Findings: findings,
-		Score:    engine.Compute(findings),
+		Metadata:     scm.Metadata{Tool: "azure-devops-bench", Platform: scm.PlatformAzureDevOps},
+		Findings:     findings,
+		Score:        engine.Compute(findings),
+		Repositories: 1,
 	}
 }
 
@@ -1706,5 +1709,79 @@ func TestJUnitIncompleteScanFails(t *testing.T) {
 	last := doc.Suites[len(doc.Suites)-1]
 	if last.Name != "scan" || last.Failures != 2 || doc.Failures != 3 {
 		t.Errorf("scan suite = %+v, total failures %d", last, doc.Failures)
+	}
+}
+
+// A scan that evaluated no repository did not do what it set out to either:
+// its organization-level findings may all pass, and code scanning would show
+// a clean run for a scan that audited none of what the repository controls
+// cover.
+func TestSARIFMarksAScanOfNoRepositoryUnsuccessful(t *testing.T) {
+	rep := &engine.Report{Metadata: scm.Metadata{BaseURL: "https://dev.azure.com/fabrikam"}, Findings: []engine.Finding{
+		{CheckID: "CIS-1.3.3", Severity: "HIGH", Status: engine.StatusPass, Resource: engine.InstanceResourceName, ResourceType: engine.ResourceOrganization, Details: "3 administrators"},
+	}}
+	var log struct {
+		Runs []struct {
+			Invocations []struct {
+				ExecutionSuccessful        bool `json:"executionSuccessful"`
+				ToolExecutionNotifications []struct {
+					Level   string `json:"level"`
+					Message struct {
+						Text string `json:"text"`
+					} `json:"message"`
+				} `json:"toolExecutionNotifications"`
+			} `json:"invocations"`
+		} `json:"runs"`
+	}
+	if err := json.Unmarshal([]byte(renderReport(t, rep, Options{Format: FormatSARIF})), &log); err != nil {
+		t.Fatal(err)
+	}
+	inv := log.Runs[0].Invocations[0]
+	if inv.ExecutionSuccessful {
+		t.Error("executionSuccessful = true for a scan that evaluated no repository")
+	}
+	said := false
+	for _, n := range inv.ToolExecutionNotifications {
+		said = said || (n.Level == "error" && strings.Contains(n.Message.Text, "evaluated no repository"))
+	}
+	if !said {
+		t.Errorf("no error notification says why: %+v", inv.ToolExecutionNotifications)
+	}
+
+	rep.Repositories = 1
+	if err := json.Unmarshal([]byte(renderReport(t, rep, Options{Format: FormatSARIF})), &log); err != nil {
+		t.Fatal(err)
+	}
+	if !log.Runs[0].Invocations[0].ExecutionSuccessful {
+		t.Error("executionSuccessful = false for a complete scan")
+	}
+}
+
+// The same in JUnit: a test view that only reads the XML must not show green
+// for a scan the CLI exits 2 on.
+func TestJUnitFailsAScanOfNoRepository(t *testing.T) {
+	rep := &engine.Report{Findings: []engine.Finding{
+		{CheckID: "CIS-1.3.3", Severity: "HIGH", Status: engine.StatusPass, Resource: engine.InstanceResourceName, ResourceType: engine.ResourceOrganization, Details: "3 administrators"},
+	}}
+	out := renderReport(t, rep, Options{Format: FormatJUnit})
+	if !strings.Contains(out, `<testcase name="repositories" classname="scan.coverage">`) || !strings.Contains(out, `<testsuites name="azure-devops-bench" tests="2" failures="1"`) {
+		t.Errorf("a scan of no repository does not fail in JUnit:\n%s", out)
+	}
+
+	rep.Repositories = 1
+	if out := renderReport(t, rep, Options{Format: FormatJUnit}); strings.Contains(out, "scan.coverage") {
+		t.Errorf("a complete scan carries a coverage failure:\n%s", out)
+	}
+}
+
+// An unlisted project fails both as well, exiting 2 is the CLI's business.
+func TestAnUnlistedProjectFailsSARIFAndJUnit(t *testing.T) {
+	rep := sampleReport()
+	rep.Metadata.Unlisted = []string{"Locked"}
+	if out := renderReport(t, rep, Options{Format: FormatSARIF}); !strings.Contains(out, `"executionSuccessful": false`) {
+		t.Errorf("SARIF of an incomplete scan:\n%s", out)
+	}
+	if out := renderReport(t, rep, Options{Format: FormatJUnit}); !strings.Contains(out, `<testcase name="Locked" classname="scan.coverage">`) {
+		t.Errorf("JUnit of an incomplete scan:\n%s", out)
 	}
 }

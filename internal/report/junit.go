@@ -121,11 +121,17 @@ func writeJUnit(w io.Writer, rep *engine.Report, opts Options) error {
 		{Name: "platform", Value: rep.Metadata.Platform},
 		{Name: "toolVersion", Value: opts.ToolVersion},
 	}}
-	// A scan that missed projects must not render as a clean test run: the
-	// missing repositories have no test case to fail, so the run carries a
-	// failure of its own.
-	if len(rep.Metadata.Unlisted) > 0 || len(rep.Errors) > 0 {
+	// A scan that missed projects, or evaluated no repository at all, must
+	// not render as a clean test run: the missing repositories have no test
+	// case to fail, so the run carries a failure of its own.
+	if rep.Repositories == 0 || len(rep.Metadata.Unlisted) > 0 || len(rep.Errors) > 0 {
 		suite := junitTestSuite{Name: "scan"}
+		if rep.Repositories == 0 {
+			suite.Cases = append(suite.Cases, junitTestCase{
+				Name: "repositories", ClassName: "scan.coverage",
+				Failure: &junitFailure{Message: noRepositoryEvaluated, Type: "ERROR"},
+			})
+		}
 		for _, project := range rep.Metadata.Unlisted {
 			suite.Cases = append(suite.Cases, junitTestCase{
 				Name: project, ClassName: "scan.coverage",

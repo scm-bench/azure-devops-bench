@@ -501,22 +501,52 @@ func TestEveryBundledCheckIsExercised(t *testing.T) {
 	}
 }
 
-func TestRepositoriesEvaluatedCountsRepositories(t *testing.T) {
+// The report says how many repositories its repository controls covered,
+// counting what was evaluated rather than what the snapshot holds: the CLI's
+// "audited nothing" exit and the machine formats' coverage failure both read
+// it, and a disabled repository skipped by configuration was audited by
+// nothing.
+func TestReportCountsTheRepositoriesItEvaluated(t *testing.T) {
 	ctx := context.Background()
-	eng, err := engine.New(ctx, config.Default(), scm.PlatformAzureDevOps)
+	disabled := hardenedRepo()
+	disabled.Slug, disabled.Name, disabled.FullName = "old", "old", "Fabrikam/old"
+	disabled.Archived, disabled.Disabled = true, true
+	snapshot := snapshotWith([]scm.Repository{hardenedRepo(), openRepo(), disabled}, healthyOrg())
+
+	for _, tc := range []struct {
+		skip bool
+		want int
+	}{{false, 3}, {true, 2}} {
+		cfg := config.Default()
+		cfg.SkipArchivedRepositories = tc.skip
+		eng, err := engine.New(ctx, cfg, scm.PlatformAzureDevOps)
+		if err != nil {
+			t.Fatal(err)
+		}
+		rep, err := eng.Evaluate(ctx, snapshot)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if rep.Repositories != tc.want {
+			t.Errorf("skipArchivedRepositories=%v: Repositories = %d, want %d", tc.skip, rep.Repositories, tc.want)
+		}
+	}
+
+	// Whatever controls are selected: an organization-only selection still
+	// evaluated the repositories it was given.
+	cfg := config.Default()
+	cfg.Include = []string{"CIS-1.3.3"}
+	eng, err := engine.New(ctx, cfg, scm.PlatformAzureDevOps)
 	if err != nil {
 		t.Fatal(err)
 	}
-	rep, err := eng.Evaluate(ctx, snapshotWith([]scm.Repository{hardenedRepo(), openRepo()}, healthyOrg()))
-	if err != nil {
-		t.Fatal(err)
-	}
-	if rep.RepositoriesEvaluated() != 2 {
-		t.Errorf("repositories evaluated = %d", rep.RepositoriesEvaluated())
+	rep, _ := eng.Evaluate(ctx, snapshotWith([]scm.Repository{hardenedRepo()}, healthyOrg()))
+	if rep.Repositories != 1 {
+		t.Errorf("an organization-only selection counted %d repositories", rep.Repositories)
 	}
 	rep, _ = eng.Evaluate(ctx, snapshotWith(nil, healthyOrg()))
-	if rep.RepositoriesEvaluated() != 0 {
-		t.Errorf("an organization with no repositories evaluated %d", rep.RepositoriesEvaluated())
+	if rep.Repositories != 0 {
+		t.Errorf("an organization with no repositories counted %d", rep.Repositories)
 	}
 }
 
@@ -555,8 +585,8 @@ func TestEvaluationScalesWithRepositories(t *testing.T) {
 		t.Fatal(err)
 	}
 	took := time.Since(start)
-	if rep.RepositoriesEvaluated() != n {
-		t.Fatalf("evaluated %d", rep.RepositoriesEvaluated())
+	if rep.Repositories != n {
+		t.Fatalf("evaluated %d", rep.Repositories)
 	}
 	// 1,000 repositories in under 30s, race detector included, is 10,000 in
 	// well under a minute without it.

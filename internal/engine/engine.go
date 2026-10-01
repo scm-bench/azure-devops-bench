@@ -88,6 +88,15 @@ type Report struct {
 	Metadata scm.Metadata `json:"metadata"`
 	Findings []Finding    `json:"findings"`
 	Score    Score        `json:"score"`
+	// Repositories is how many repositories the repository-scope controls
+	// were evaluated against, counted after skipArchivedRepositories rather
+	// than read off the snapshot. Zero means they audited nothing — a
+	// --project nobody can read, a token that sees nothing, an organization
+	// whose every repository is disabled — and the machine-read formats say
+	// so themselves: a report holding only organization-level findings, which
+	// can all pass, otherwise renders as a clean run to a CI view that never
+	// sees the exit code.
+	Repositories int `json:"repositories"`
 	// Errors records policies that failed to evaluate. They surface as MANUAL
 	// findings too, so a broken rule is loud but not fatal.
 	Errors []string `json:"errors,omitempty"`
@@ -263,6 +272,7 @@ func (e *Engine) Evaluate(ctx context.Context, snapshot *scm.Snapshot) (*Report,
 			if e.cfg.SkipArchivedRepositories && repo.Archived {
 				continue
 			}
+			report.Repositories++
 			repoValue, err := toJSONValue(repo)
 			if err != nil {
 				return nil, fmt.Errorf("encode repository %s: %w", repo.FullName, err)
@@ -340,19 +350,6 @@ func resourceMatches(patterns []string, resource string) bool {
 		}
 	}
 	return false
-}
-
-// RepositoriesEvaluated counts the repositories a report holds findings for.
-// A scan that evaluated none audited nothing of what it exists to audit, and
-// the CLI exits 2 on it.
-func (r *Report) RepositoriesEvaluated() int {
-	seen := map[string]bool{}
-	for _, f := range r.Findings {
-		if f.ResourceType == ResourceRepository {
-			seen[f.Resource] = true
-		}
-	}
-	return len(seen)
 }
 
 // evaluateOne runs a single control against a single resource. A policy that

@@ -366,3 +366,24 @@ func TestARejectedCredentialExitsTwo(t *testing.T) {
 		t.Errorf("stderr = %s", stderr)
 	}
 }
+
+// The exit code and the machine-read report agree about a scan that audited
+// nothing: a CI view that draws the SARIF or the JUnit without reading the
+// exit code must not show a clean run either.
+func TestAScanOfNoRepositoryFailsInTheReportToo(t *testing.T) {
+	disabled := writeSnapshotWith(t, func(s *scm.Snapshot) {
+		s.Projects[0].Repositories[0].Archived = true
+		s.Projects[0].Repositories[0].Disabled = true
+	})
+	sarif, _, err := runRoot(t, "scan", "--snapshot-in", disabled, "-o", "sarif", "-c", configWithFailOn(t, "none"))
+	if ExitCode(err) != ExitError {
+		t.Errorf("exit code = %d", ExitCode(err))
+	}
+	if !strings.Contains(sarif, `"executionSuccessful": false`) || !strings.Contains(sarif, "evaluated no repository") {
+		t.Errorf("SARIF does not fail the run:\n%s", sarif)
+	}
+	junit, _, _ := runRoot(t, "scan", "--snapshot-in", disabled, "-o", "junit", "-c", configWithFailOn(t, "none"))
+	if !strings.Contains(junit, `<testcase name="repositories" classname="scan.coverage">`) {
+		t.Errorf("JUnit does not fail the run:\n%s", junit)
+	}
+}

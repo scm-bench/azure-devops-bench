@@ -283,6 +283,9 @@ func writeSARIF(w io.Writer, rep *engine.Report, opts Options) error {
 	for _, e := range rep.Errors {
 		notifications = append(notifications, sarifNotification{Level: "error", Message: sarifText{Text: e}})
 	}
+	if rep.Repositories == 0 {
+		notifications = append(notifications, sarifNotification{Level: "error", Message: sarifText{Text: noRepositoryEvaluated}})
+	}
 
 	run := sarifRun{
 		Tool: sarifTool{Driver: sarifDriver{
@@ -294,7 +297,10 @@ func writeSARIF(w io.Writer, rep *engine.Report, opts Options) error {
 		AutomationDetails: sarifAutomation{ID: benchName + "/" + instance + "/"},
 		Results:           results,
 		Invocations: []sarifInvocation{{
-			ExecutionSuccessful:        len(rep.Errors) == 0 && len(rep.Metadata.Unlisted) == 0,
+			// A run that could not list every project, or evaluated no
+			// repository at all, did not do what it set out to, whatever it
+			// found in the rest.
+			ExecutionSuccessful:        len(rep.Errors) == 0 && len(rep.Metadata.Unlisted) == 0 && rep.Repositories > 0,
 			ToolExecutionNotifications: notifications,
 		}},
 		Properties: map[string]any{

@@ -656,7 +656,11 @@ func exitStatus(rep *engine.Report, opts *scanOptions) error {
 				console.Pluralize(len(rep.Errors), "control"), strings.Join(rep.Errors, "\n")),
 		}
 	}
-	if rep.RepositoriesEvaluated() == 0 {
+	// The engine's count, not the snapshot's: a snapshot whose every
+	// repository is disabled evaluates none of them under
+	// skipArchivedRepositories, and the report's SARIF and JUnit fail on the
+	// same number.
+	if rep.Repositories == 0 {
 		return &exitCodeError{
 			code: ExitError,
 			msg: "no repository was evaluated, so nothing was audited: check --project/--repository, " +
