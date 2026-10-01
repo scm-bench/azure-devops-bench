@@ -1,0 +1,29 @@
+CONTRIBUTING.md
+  s_48d8fa1c49bfb6::t_e6292a18f7c25f 4-233
+  s_48d8fa1c49bfb6::t_8cd77d90a7203a 1-3,234-238
+README.md
+  s_48d8fa1c49bfb6::t_080f4f6d2046bf 4-6,16-22,24-25,28-407,409-411,413-415,417-421,423,425,427-428,430-759
+  s_48d8fa1c49bfb6::t_915a80c98a377a 760-772
+README.zh-CN.md
+  s_48d8fa1c49bfb6::t_cd10e7d8f059ef 1-670
+CODE_OF_CONDUCT.md
+  s_48d8fa1c49bfb6::t_3a7a98a1261a70 1-133
+SECURITY.md
+  s_48d8fa1c49bfb6::t_de38a1a03241cc 1-67
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "19e2d9911f358bac84661abe32e9979c1d6186b4",
+  "prompts": {},
+  "sessions": {
+    "s_48d8fa1c49bfb6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b91ffb09-1c76-4e54-9777-4525648b2969",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Xianpeng Shen <xianpeng.shen@gmail.com>"
+    }
+  }
+}
