@@ -1,0 +1,17 @@
+{
+  "id": "CIS-1.1.11",
+  "cisId": "1.1.11",
+  "package": "scmbench.rules.cis_1_1_11",
+  "scope": "repository",
+  "severity": "LOW",
+  "platforms": ["azure-devops"],
+  "automated": true,
+  "title": "Ensure all open comments are resolved before merging",
+  "description": "A reviewer's objection should not be mergeable away. Azure Repos can refuse to complete a pull request while any comment thread is active, which turns review comments into something that has to be answered rather than outlived.",
+  "remediation": "Project settings -> Repositories -> <repository> -> Policies -> Branch Policies -> <default branch>: set \"Check for comment resolution\" to On and Required. To cover every repository at once, add it at Project settings -> Repositories -> All Repositories -> Policies -> Branch Policies -> + -> \"Protect the default branch of each repository\".",
+  "fixSummary": "Require comment resolution at Project settings -> Repositories -> <repo> -> Policies.",
+  "references": [
+    "https://www.cisecurity.org/benchmark/software-supply-chain-security",
+    "https://learn.microsoft.com/en-us/azure/devops/repos/git/branch-policies#require-comment-resolution"
+  ]
+}

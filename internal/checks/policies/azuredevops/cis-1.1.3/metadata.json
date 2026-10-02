@@ -1,0 +1,17 @@
+{
+  "id": "CIS-1.1.3",
+  "cisId": "1.1.3",
+  "package": "scmbench.rules.cis_1_1_3",
+  "scope": "repository",
+  "severity": "HIGH",
+  "platforms": ["azure-devops"],
+  "automated": true,
+  "title": "Ensure any change to code receives approval of two strongly authenticated users",
+  "description": "Requiring two approvals means no single account — compromised, careless, or malicious — can land code on its own. On Azure Repos the count that matters is independent approvals: when \"Allow requestors to approve their own changes\" is on, the author's own vote counts toward the minimum, so a minimum of two is one reviewer and the author. Whether the approvers authenticated strongly is decided by Microsoft Entra ID, not readable here; see CIS-1.3.5.",
+  "remediation": "Project settings -> Repositories -> <repository> -> Policies -> Branch Policies -> <default branch>: turn on \"Require a minimum number of reviewers\", set the minimum to at least 2, and leave \"Allow requestors to approve their own changes\" off. Turning on \"Prohibit the most recent pusher from approving their own changes\" closes the variant where someone pushes to another person's pull request and approves it. To cover every repository at once, add the policy at Project settings -> Repositories -> All Repositories -> Policies -> Branch Policies -> + -> \"Protect the default branch of each repository\". Adjust the minimum with thresholds.minApprovers in azure-devops-bench's config.",
+  "fixSummary": "Require 2+ reviewers at Project settings -> Repositories -> <repo> -> Policies.",
+  "references": [
+    "https://www.cisecurity.org/benchmark/software-supply-chain-security",
+    "https://learn.microsoft.com/en-us/azure/devops/repos/git/branch-policies#require-a-minimum-number-of-reviewers"
+  ]
+}

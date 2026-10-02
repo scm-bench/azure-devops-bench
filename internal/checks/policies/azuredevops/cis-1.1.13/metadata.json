@@ -1,0 +1,17 @@
+{
+  "id": "CIS-1.1.13",
+  "cisId": "1.1.13",
+  "package": "scmbench.rules.cis_1_1_13",
+  "scope": "repository",
+  "severity": "LOW",
+  "platforms": ["azure-devops"],
+  "automated": true,
+  "title": "Ensure linear history is required",
+  "description": "A linear history keeps the record of what shipped simple to read and to bisect. Merge commits let a branch's history be reshaped in ways that are hard to audit after the fact. Without a \"Limit merge types\" policy, Azure Repos offers every merge type, including the two that create merge commits.",
+  "remediation": "Project settings -> Repositories -> <repository> -> Policies -> Branch Policies -> <default branch>: set \"Limit merge types\" to On and allow only Squash merge and/or Rebase and fast-forward; leave Basic merge (no fast-forward) and Rebase with merge commit (semi-linear) off — both create merge commits. Set it on the project-wide policy at Project settings -> Repositories -> All Repositories -> Policies -> Branch Policies to cover every repository. If your workflow requires merge commits, edit nonLinearMergeStrategies in azure-devops-bench's config (no-ff is Basic merge, rebase-no-ff the semi-linear merge).",
+  "fixSummary": "Allow only squash or rebase merges at Project settings -> Repositories -> <repo> -> Policies.",
+  "references": [
+    "https://www.cisecurity.org/benchmark/software-supply-chain-security",
+    "https://learn.microsoft.com/en-us/azure/devops/repos/git/branch-policies#limit-merge-types"
+  ]
+}

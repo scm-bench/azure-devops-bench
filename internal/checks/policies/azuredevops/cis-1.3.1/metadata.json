@@ -1,0 +1,17 @@
+{
+  "id": "CIS-1.3.1",
+  "cisId": "1.3.1",
+  "package": "scmbench.rules.cis_1_3_1",
+  "scope": "organization",
+  "severity": "MEDIUM",
+  "platforms": ["azure-devops"],
+  "automated": true,
+  "title": "Ensure inactive users are reviewed and removed periodically",
+  "description": "An account nobody uses is an account nobody notices being used, and it still holds a paid access level. The population is every active user with an access level: an account that has not accessed the organization for the configured number of days, or that was invited that long ago and never signed in, is dormant. Azure DevOps Server reports no last access, so there this control needs a person.",
+  "remediation": "Organization settings -> Users: for each listed account, remove it, or change its access level to Stakeholder if it still needs to see work items. Where access comes from a Microsoft Entra group, remove the person from the group or the group rule (Organization settings -> Users -> Group rules), or disable them in Entra. Adjust the window with thresholds.inactiveUserDays in azure-devops-bench's config.",
+  "fixSummary": "Remove or downgrade each listed account at Organization settings -> Users.",
+  "references": [
+    "https://www.cisecurity.org/benchmark/software-supply-chain-security",
+    "https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/delete-organization-users"
+  ]
+}

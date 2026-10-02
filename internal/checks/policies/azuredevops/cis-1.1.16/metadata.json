@@ -1,0 +1,17 @@
+{
+  "id": "CIS-1.1.16",
+  "cisId": "1.1.16",
+  "package": "scmbench.rules.cis_1_1_16",
+  "scope": "repository",
+  "severity": "HIGH",
+  "platforms": ["azure-devops"],
+  "automated": true,
+  "title": "Ensure force pushing code to branches is denied",
+  "description": "A force push can erase the commits reviewers approved and replace them with different code under the same branch. Azure Repos denies it unless \"Force push (rewrite history and delete branches)\" is granted — and grants it automatically to whoever creates a branch, so the person who first pushed the default branch usually still holds it. On a branch with a required policy a force push also needs \"Bypass policies when pushing\".",
+  "remediation": "Repos -> Branches -> <default branch> -> More options -> Branch security, and Project settings -> Repositories -> <repository> -> Security: set \"Force push (rewrite history and delete branches)\" to Not set (or Deny) for every user and group listed, starting with the branch's creator, who received it when the branch was created. A Required branch policy on the branch (Project settings -> Repositories -> <repository> -> Policies) narrows the exposure to holders of both Force push and \"Bypass policies when pushing\". allowedBypassPrincipals and thresholds.maxBypassPrincipals work as for CIS-1.1.15.",
+  "fixSummary": "Remove \"Force push\" at Repos -> Branches -> <default branch> -> Branch security.",
+  "references": [
+    "https://www.cisecurity.org/benchmark/software-supply-chain-security",
+    "https://learn.microsoft.com/en-us/azure/devops/repos/git/set-git-repository-permissions"
+  ]
+}

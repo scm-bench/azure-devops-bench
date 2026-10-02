@@ -1,0 +1,17 @@
+{
+  "id": "CIS-1.3.8",
+  "cisId": "1.3.8",
+  "package": "scmbench.rules.cis_1_3_8",
+  "scope": "repository",
+  "severity": "MEDIUM",
+  "platforms": ["azure-devops"],
+  "automated": true,
+  "title": "Ensure default repository access is restricted",
+  "description": "Blanket grants are the quietest way for access to spread: nobody requests them, nobody reviews them, and they reach accounts created long after the decision. On Azure DevOps the blanket grants are those to Project Valid Users and Project Collection Valid Users, which every member of the project or organization belongs to, and a public project is readable by anyone at all.",
+  "remediation": "Project settings -> Repositories -> <repository> -> Security, and the All Repositories level above it: set every Git permission beyond Read to Not set for Project Valid Users and Project Collection Valid Users, and grant Contribute to specific groups (Contributors) instead. A public project is readable by anyone: change it at Project settings -> Overview -> Visibility (Microsoft is retiring public projects). For organizations that intentionally publish code, set allowPublicRepositories: true in azure-devops-bench's config; to allow the every-member groups more than Read, edit everyoneAllowedPermissions.",
+  "fixSummary": "Remove every-member grants beyond Read at Project settings -> Repositories -> Security.",
+  "references": [
+    "https://www.cisecurity.org/benchmark/software-supply-chain-security",
+    "https://learn.microsoft.com/en-us/azure/devops/repos/git/set-git-repository-permissions"
+  ]
+}

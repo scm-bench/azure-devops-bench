@@ -1,0 +1,17 @@
+{
+  "id": "CIS-1.1.6",
+  "cisId": "1.1.6",
+  "package": "scmbench.rules.cis_1_1_6",
+  "scope": "repository",
+  "severity": "MEDIUM",
+  "platforms": ["azure-devops"],
+  "automated": false,
+  "title": "Ensure code owners are set for extra sensitive code or configuration",
+  "description": "Which code is extra sensitive, and who owns it, is a judgement no API can make. Azure Repos has no CODEOWNERS file; its equivalent is an \"Automatically included reviewers\" policy with a path filter. The automatically included reviewer policies that apply to the default branch are listed as evidence, so the review starts from what is configured. Reported as MANUAL so the gap is visible rather than silently passing.",
+  "remediation": "Project settings -> Repositories -> <repository> -> Policies -> Branch Policies -> <default branch> -> Automatically included reviewers -> +: add the owning group, list the sensitive paths under the path filter, and set the policy to Required so their approval is binding rather than a notification.",
+  "fixSummary": "Add required, path-filtered reviewers at Project settings -> Repositories -> <repo> -> Policies.",
+  "references": [
+    "https://www.cisecurity.org/benchmark/software-supply-chain-security",
+    "https://learn.microsoft.com/en-us/azure/devops/repos/git/branch-policies#automatically-include-code-reviewers"
+  ]
+}

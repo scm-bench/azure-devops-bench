@@ -1,0 +1,16 @@
+{
+  "id": "CIS-1.2.1",
+  "cisId": "1.2.1",
+  "package": "scmbench.rules.cis_1_2_1",
+  "scope": "repository",
+  "severity": "LOW",
+  "platforms": ["azure-devops"],
+  "automated": true,
+  "title": "Ensure the repository publishes a security policy (SECURITY.md)",
+  "description": "A security policy tells whoever finds a flaw where to send it and what to expect. Without one, reports either go nowhere or go public. Azure Repos does not surface a SECURITY.md specially, but it is still the first file a reporter looks for.",
+  "remediation": "Add a SECURITY.md at the repository root (or under .github/ or docs/) on the default branch, stating where to report a vulnerability, which versions are supported, and the expected response time. Adjust which paths count with securityPolicyPaths in azure-devops-bench's config.",
+  "fixSummary": "Add a SECURITY.md at the repository root on the default branch.",
+  "references": [
+    "https://www.cisecurity.org/benchmark/software-supply-chain-security"
+  ]
+}

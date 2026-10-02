@@ -1,0 +1,17 @@
+{
+  "id": "CIS-1.1.8",
+  "cisId": "1.1.8",
+  "package": "scmbench.rules.cis_1_1_8",
+  "scope": "repository",
+  "severity": "LOW",
+  "platforms": ["azure-devops"],
+  "automated": true,
+  "title": "Ensure inactive branches are periodically reviewed and removed",
+  "description": "Abandoned branches hold unreviewed code and stale dependencies while still being reachable and mergeable. They also hide genuinely active work in a long branch list. Age is the committer date of each branch's tip, which a client sets: an estimate of activity, not proof of it.",
+  "remediation": "Repos -> Branches: review the listed branches and delete the finished or abandoned ones (More options -> Delete branch), or run `git push origin --delete <branch>`. To keep this from recurring, tick \"Delete <branch> after merging\" when completing pull requests. Adjust the window with thresholds.staleBranchDays, and how many may remain with thresholds.maxStaleBranches, in azure-devops-bench's config.",
+  "fixSummary": "Delete finished branches at Repos -> Branches -> (branch) -> Delete branch.",
+  "references": [
+    "https://www.cisecurity.org/benchmark/software-supply-chain-security",
+    "https://learn.microsoft.com/en-us/azure/devops/repos/git/delete-git-branch"
+  ]
+}

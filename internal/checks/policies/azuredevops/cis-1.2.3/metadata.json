@@ -1,0 +1,17 @@
+{
+  "id": "CIS-1.2.3",
+  "cisId": "1.2.3",
+  "package": "scmbench.rules.cis_1_2_3",
+  "scope": "repository",
+  "severity": "MEDIUM",
+  "platforms": ["azure-devops"],
+  "automated": true,
+  "title": "Ensure repository deletion is limited to specific users",
+  "description": "A deleted repository takes its history, pull requests and policies with it. On Azure DevOps, \"Delete or disable repository\" is its own permission, held by default by Project Administrators — who also hold Manage permissions. This control fails when anyone who does not administer the repository holds it. Organization administrators can delete anything and are counted by CIS-1.3.3 instead.",
+  "remediation": "Project settings -> Repositories -> <repository> -> Security, and the All Repositories level above it: set \"Delete or disable repository\" to Not set for everyone listed who does not also hold Manage permissions. For repositories that must not be lost, keep an independent mirror: an administrator's deletion cannot be prevented by configuration alone.",
+  "fixSummary": "Remove \"Delete or disable repository\" at Project settings -> Repositories -> <repo> -> Security.",
+  "references": [
+    "https://www.cisecurity.org/benchmark/software-supply-chain-security",
+    "https://learn.microsoft.com/en-us/azure/devops/repos/git/set-git-repository-permissions"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "CIS-1.2.2",
+  "cisId": "1.2.2",
+  "package": "scmbench.rules.cis_1_2_2",
+  "scope": "organization",
+  "severity": "MEDIUM",
+  "platforms": ["azure-devops"],
+  "automated": true,
+  "title": "Ensure repository creation is limited to specific members",
+  "description": "Every new repository starts outside the review of whoever governs the existing ones. On Azure DevOps, \"Create repository\" is its own permission, held by default only by Project Administrators; this control lists, per project, the people who hold it without administering the project. Organization administrators are counted by CIS-1.3.3 instead.",
+  "remediation": "Project settings -> Repositories -> All Repositories -> Security, in each listed project: set \"Create repository\" to Not set for the users and groups listed, leaving it with Project Administrators. A grant made for the organization's Git repositories as a whole applies to every project, so check it there too. Adjust how many non-administrators may hold it per project with thresholds.maxRepositoryCreators in azure-devops-bench's config.",
+  "fixSummary": "Remove \"Create repository\" at Project settings -> Repositories -> All Repositories -> Security.",
+  "references": [
+    "https://www.cisecurity.org/benchmark/software-supply-chain-security",
+    "https://learn.microsoft.com/en-us/azure/devops/repos/git/set-git-repository-permissions"
+  ]
+}

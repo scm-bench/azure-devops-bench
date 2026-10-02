@@ -1,0 +1,78 @@
+# The annotated full set of azure-devops-bench configuration keys, every one at
+# its default. Copy what you want to change; an absent key keeps its default.
+#
+#   azure-devops-bench scan --config examples/config.yaml
+#
+# Maps merge with the defaults; lists replace them wholesale — naming one entry
+# of a six-entry list leaves a one-entry list.
+
+scan:
+  failOn: high            # exit 1 on a failure at or above: high, medium, low, none
+  failUnder: 0            # exit 1 when the score is below this; 0 disables
+  maxManual: -1           # exit 1 when more than this % of automatable findings went unevaluated
+  concurrency: 4          # repositories fetched in parallel
+  timeout: 30s            # per request
+  maxDuration: 0s         # whole scan; 0s means no limit
+  caFile: ""              # PEM bundle added to the system roots (Azure DevOps Server, internal CA)
+  insecure: false         # skip TLS verification — prefer caFile
+  allowPlaintext: false   # permit http:// to a non-loopback host
+  allowIncomplete: false  # exit on findings, not 2, when a project could not be enumerated
+  progress: compact       # full, compact or off
+  cache: true             # keep each scan's snapshot for scan --last
+
+thresholds:
+  minApprovers: 2           # CIS-1.1.3: independent approvals required
+  minRepositoryAdmins: 2    # CIS-1.3.7
+  minOrgAdmins: 2           # CIS-1.3.3 lower bound
+  maxOrgAdmins: 5           # CIS-1.3.3 upper bound; 0 means unbounded
+  staleBranchDays: 90       # CIS-1.1.8
+  maxStaleBranches: 0       # CIS-1.1.8
+  inactiveUserDays: 90      # CIS-1.3.1
+  maxBypassPrincipals: 0    # CIS-1.1.5, 1.1.15-1.1.17; -1 turns the bypass check off
+  maxRepositoryCreators: 0  # CIS-1.2.2: non-administrators per project
+
+# CIS-1.1.12: required status checks that verify commit signatures, "genre/name"
+# or "name". Empty means nothing counts, and the control fails.
+signatureStatusChecks: []
+
+# CIS-1.1.13: no-ff is Basic merge, rebase-no-ff the semi-linear merge.
+nonLinearMergeStrategies: [no-ff, rebase-no-ff, ff]
+
+# CIS-1.2.1
+securityPolicyPaths: [SECURITY.md, .github/SECURITY.md, docs/SECURITY.md, SECURITY.rst, SECURITY.txt, SECURITY]
+
+# CIS-1.3.8: what Project Valid Users and Project Collection Valid Users may hold.
+everyoneAllowedPermissions: [GenericRead]
+
+# CIS-1.1.5, 1.1.14-1.1.17: service identities expected to hold a bypass.
+allowedBypassPrincipals: []
+
+allowPublicRepositories: false
+skipArchivedRepositories: true
+
+# Exceptions: findings your organization has decided to live with, for a
+# stated reason and until a stated date. Every field but owner is required —
+# an exception without a reason or an end date is how accepted risk becomes
+# forgotten risk.
+#
+# An accepted finding is still reported (under "Accepted by exceptions"),
+# still FAIL, and still counted in the score: the score describes the
+# organization, and accepting a finding does not change it. What it stops
+# doing is failing the run on scan.failOn — or, for a MANUAL finding, counting
+# against scan.maxManual. In SARIF it carries a suppression, which code
+# scanning shows as dismissed; in JUnit it is a skipped case.
+#
+# The day after expires, it lapses and the finding fails the run again; an
+# exception that matches nothing is reported too, so the list cannot rot
+# quietly. resources are globs: * does not cross a "/", so Fabrikam/* is every
+# repository in Fabrikam; "instance" is an organization-level control.
+#
+# exceptions:
+#   - control: CIS-1.1.13
+#     resources: [Fabrikam-Fiber/legacy-portal, Fabrikam-Fiber/legacy-*]
+#     reason: Release tooling needs merge commits until the migration lands
+#     owner: platform-team@example.com
+#     expires: 2027-03-31
+
+exclude: []
+include: []
