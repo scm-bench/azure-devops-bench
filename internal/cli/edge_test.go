@@ -399,9 +399,18 @@ func TestScanReportsFilesItCannotWrite(t *testing.T) {
 }
 
 // A deadline that has already passed stops the evaluation too, not only the
-// fetch.
+// fetch. The parent context has expired before the scan starts: a 1ns
+// scan.maxDuration alone races the timer, and Windows' coarse timer lets the
+// evaluation finish first.
 func TestScanDeadlineStopsTheEvaluation(t *testing.T) {
-	err := executeErr(t, "scan", "--snapshot-in", writeSnapshotFixture(t), "--set", "scan.maxDuration=1ns")
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(-time.Second))
+	defer cancel()
+	root := NewRootCommand()
+	root.SetOut(io.Discard)
+	root.SetErr(io.Discard)
+	root.SetIn(strings.NewReader(""))
+	root.SetArgs([]string{"scan", "--snapshot-in", writeSnapshotFixture(t), "--set", "scan.maxDuration=1h"})
+	err := root.ExecuteContext(ctx)
 	if !errors.Is(err, context.DeadlineExceeded) {
 		t.Errorf("err = %v, want the deadline", err)
 	}
