@@ -211,7 +211,7 @@ func (t *tracer) summary() (string, console.Tag) {
 		}
 	}
 
-	line := fmt.Sprintf("%d requests · %s", t.total, strings.Join(parts, " · "))
+	line := fmt.Sprintf("%s · %s", console.Pluralize(t.total, "request"), strings.Join(parts, " · "))
 	if t.retries > 0 {
 		line += fmt.Sprintf(" · %d retried", t.retries)
 	}

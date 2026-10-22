@@ -401,7 +401,7 @@ CIS-1.3.5 MANUAL (instance): Multi-factor authentication is enforced by Microsof
 
 ...
 
-8 controls could not be read (Unread) on Fabrikam-Fiber/shared-infra; see Scan warnings below.
+8 controls could not be read (Unread) on Fabrikam-Fiber/shared-infra: CIS-1.1.15, CIS-1.1.5, CIS-1.1.14, CIS-1.2.3, CIS-1.5.1, CIS-1.1.8 and 2 more; see Scan warnings below.
 
 Scan warnings
 
