@@ -90,14 +90,18 @@ func TestConfigDirectoryThatIsAFile(t *testing.T) {
 	if _, err := SnapshotCachePath("https://dev.azure.com/org"); err == nil || !strings.Contains(err.Error(), "create ") {
 		t.Errorf("SnapshotCachePath: err = %v, want a create error", err)
 	}
-	if _, err := LatestSnapshotCache(); err == nil || !strings.Contains(err.Error(), "read snapshot cache") {
-		t.Errorf("LatestSnapshotCache: err = %v, want a read error", err)
-	}
 	if _, err := SaveInstance(Instance{URL: "https://dev.azure.com/org"}); err == nil || !strings.Contains(err.Error(), "create ") {
 		t.Errorf("SaveInstance: err = %v, want a create error", err)
 	}
-	if _, _, err := LoadInstance(); err == nil || !strings.Contains(err.Error(), "read saved instance") {
-		t.Errorf("LoadInstance: err = %v, want a read error", err)
+	// Windows answers a path under a file with "path not found", which
+	// reads as nothing cached and nothing saved rather than as an error.
+	if runtime.GOOS != "windows" {
+		if _, err := LatestSnapshotCache(); err == nil || !strings.Contains(err.Error(), "read snapshot cache") {
+			t.Errorf("LatestSnapshotCache: err = %v, want a read error", err)
+		}
+		if _, _, err := LoadInstance(); err == nil || !strings.Contains(err.Error(), "read saved instance") {
+			t.Errorf("LoadInstance: err = %v, want a read error", err)
+		}
 	}
 }
 
