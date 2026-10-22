@@ -216,9 +216,6 @@ func movedFlagError(cmd *cobra.Command, err error) error {
 
 func runScan(cmd *cobra.Command, opts *scanOptions) error {
 	ctx := cmd.Context()
-	if ctx == nil {
-		ctx = context.Background()
-	}
 
 	if opts.demo {
 		// A typed flag the demo would silently ignore is refused: the report
@@ -260,11 +257,7 @@ func runScan(cmd *cobra.Command, opts *scanOptions) error {
 	stderr := cmd.ErrOrStderr()
 	configPath := opts.configPath
 	if configPath == "" {
-		discovered, err := config.Discover()
-		if err != nil {
-			return err
-		}
-		configPath = discovered
+		configPath = config.Discover()
 	}
 	if configPath != "" {
 		console.Writer{W: stderr, P: console.Painter{Enabled: useProgressColor(opts, stderr)}}.

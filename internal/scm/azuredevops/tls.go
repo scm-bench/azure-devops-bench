@@ -14,6 +14,10 @@ func tlsInsecureConfig() *tls.Config {
 	return &tls.Config{InsecureSkipVerify: true} //nolint:gosec // opt-in via scan.insecure
 }
 
+// systemCertPool is x509.SystemCertPool; a variable so a test can stand in a
+// platform that has none.
+var systemCertPool = x509.SystemCertPool
+
 // LoadCABundle returns the system roots with the certificates in the PEM file
 // at path added to them.
 //
@@ -29,7 +33,7 @@ func LoadCABundle(path string) (*x509.CertPool, error) {
 	if err != nil {
 		return nil, fmt.Errorf("scan.caFile: %w", err)
 	}
-	pool, err := x509.SystemCertPool()
+	pool, err := systemCertPool()
 	if err != nil || pool == nil {
 		// Some platforms (and stripped containers) have no system pool to
 		// start from; the bundle alone is still better than nothing.

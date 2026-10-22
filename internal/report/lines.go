@@ -206,20 +206,23 @@ func groupByControlDetails(findings []engine.Finding, keep func(engine.Finding) 
 			out[i].instance = true
 		}
 	}
-	sort.SliceStable(out, func(a, b int) bool {
-		x, y := out[a], out[b]
-		if wa, wb := checks.Weight(x.rep.Severity), checks.Weight(y.rep.Severity); wa != wb {
-			return wa > wb
-		}
-		if x.rep.CISID != y.rep.CISID {
-			return checks.LessCISID(x.rep.CISID, y.rep.CISID)
-		}
-		if len(x.resources) != len(y.resources) {
-			return len(x.resources) > len(y.resources)
-		}
-		return x.details < y.details
-	})
+	sort.SliceStable(out, func(a, b int) bool { return lessGroup(out[a], out[b]) })
 	return out
+}
+
+// lessGroup orders the aggregated lines: most severe first, then benchmark
+// order, then the reason that covers the most resources, then by text.
+func lessGroup(x, y findingGroup) bool {
+	if wa, wb := checks.Weight(x.rep.Severity), checks.Weight(y.rep.Severity); wa != wb {
+		return wa > wb
+	}
+	if x.rep.CISID != y.rep.CISID {
+		return checks.LessCISID(x.rep.CISID, y.rep.CISID)
+	}
+	if len(x.resources) != len(y.resources) {
+		return len(x.resources) > len(y.resources)
+	}
+	return x.details < y.details
 }
 
 // countLabel names what a group spans: the instance by name, anything else by
@@ -271,20 +274,23 @@ func writeGroupLines(w io.Writer, p painter, width int, status string, groups []
 func orderRecords(findings []engine.Finding) []engine.Finding {
 	out := make([]engine.Finding, len(findings))
 	copy(out, findings)
-	sort.SliceStable(out, func(a, b int) bool {
-		x, y := out[a], out[b]
-		if wa, wb := checks.Weight(x.Severity), checks.Weight(y.Severity); wa != wb {
-			return wa > wb
-		}
-		if x.CISID != y.CISID {
-			return checks.LessCISID(x.CISID, y.CISID)
-		}
-		if xi, yi := x.Resource == engine.InstanceResourceName, y.Resource == engine.InstanceResourceName; xi != yi {
-			return xi
-		}
-		return x.Resource < y.Resource
-	})
+	sort.SliceStable(out, func(a, b int) bool { return lessRecord(out[a], out[b]) })
 	return out
+}
+
+// lessRecord orders single findings: most severe first, then benchmark order,
+// then the organization ahead of its repositories, then by name.
+func lessRecord(x, y engine.Finding) bool {
+	if wa, wb := checks.Weight(x.Severity), checks.Weight(y.Severity); wa != wb {
+		return wa > wb
+	}
+	if x.CISID != y.CISID {
+		return checks.LessCISID(x.CISID, y.CISID)
+	}
+	if xi, yi := x.Resource == engine.InstanceResourceName, y.Resource == engine.InstanceResourceName; xi != yi {
+		return xi
+	}
+	return x.Resource < y.Resource
 }
 
 // unreadSummary folds every unread finding into one clause, or "" when

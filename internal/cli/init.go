@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -117,6 +118,10 @@ scan:
 #include: []
 `
 
+// openFile is os.OpenFile; a variable so a test can hand init a file that
+// refuses the write, which no real directory does on demand.
+var openFile = os.OpenFile
+
 func newInitCommand() *cobra.Command {
 	var path string
 
@@ -134,18 +139,15 @@ judges an organization is not something a scaffolding command should replace.`,
 			// O_EXCL does the refusing atomically: stat-then-write would race,
 			// and racing towards overwriting someone's thresholds is the worst
 			// direction to race in.
-			f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o644)
+			f, err := openFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o644)
 			if err != nil {
 				if os.IsExist(err) {
 					return fmt.Errorf("%s already exists; edit it, or pass --path to write the template elsewhere", path)
 				}
 				return fmt.Errorf("create %s: %w", path, err)
 			}
-			if _, err := f.WriteString(configTemplate); err != nil {
-				f.Close()
-				return fmt.Errorf("write %s: %w", path, err)
-			}
-			if err := f.Close(); err != nil {
+			_, writeErr := f.WriteString(configTemplate)
+			if err := errors.Join(writeErr, f.Close()); err != nil {
 				return fmt.Errorf("write %s: %w", path, err)
 			}
 

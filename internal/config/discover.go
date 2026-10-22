@@ -24,27 +24,26 @@ const configDirEnv = "AZURE_DEVOPS_BENCH_CONFIG_DIR"
 // then config.yaml under the user config directory (or
 // AZURE_DEVOPS_BENCH_CONFIG_DIR), the person's own defaults. "" means none
 // found, which is not an error: defaults are the normal state before anyone
-// has run init.
+// has run init — and neither is a machine with no user config directory,
+// which simply has nothing to discover there.
 //
 // An explicit --config always wins over this; the caller enforces that by
 // not calling Discover when one was given.
-func Discover() (string, error) {
+func Discover() string {
 	for _, name := range discoverNames {
 		if _, err := os.Stat(name); err == nil {
-			return name, nil
+			return name
 		}
 	}
 	dir, err := userConfigDir()
 	if err != nil {
-		// No user config directory means nothing to discover there, not a
-		// broken scan.
-		return "", nil
+		return ""
 	}
 	path := filepath.Join(dir, userConfigFile)
 	if _, err := os.Stat(path); err == nil {
-		return path, nil
+		return path
 	}
-	return "", nil
+	return ""
 }
 
 // userConfigDir is where per-user azure-devops-bench files live, shared with

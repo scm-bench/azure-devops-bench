@@ -450,13 +450,24 @@ func (c *Client) get(ctx context.Context, svc Service, path string, query url.Va
 	if base == nil {
 		return nil, fmt.Errorf("%s is not available on this deployment", svc)
 	}
-	endpoint, err := url.Parse(strings.TrimRight(base.String(), "/") + path)
+	// Built once and cloned per attempt: the URL is parsed here, so a path
+	// that cannot be one fails before anything is sent, and no attempt can
+	// fail to build what the first one built.
+	template, err := http.NewRequestWithContext(ctx, http.MethodGet, strings.TrimRight(base.String(), "/")+path, nil)
 	if err != nil {
 		return nil, fmt.Errorf("build request for %s: %w", path, err)
 	}
+	endpoint := template.URL
 	if query != nil {
 		endpoint.RawQuery = query.Encode()
 	}
+	template.Header.Set("Authorization", c.authHeader)
+	template.Header.Set("Accept", "application/json")
+	template.Header.Set("User-Agent", c.userAgent)
+	// Asks for a 401 instead of a sign-in redirect when the credential is
+	// not accepted. Microsoft's own client sends it; without it a rejected
+	// token can come back as a 203 HTML page that looks like success.
+	template.Header.Set("X-TFS-FedAuthRedirect", "Suppress")
 
 	var lastErr error
 	for attempt := 0; attempt <= c.maxRetries; attempt++ {
@@ -471,18 +482,7 @@ func (c *Client) get(ctx context.Context, svc Service, path string, query url.Va
 			return nil, err
 		}
 
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint.String(), nil)
-		if err != nil {
-			return nil, fmt.Errorf("build request for %s: %w", endpoint.Path, err)
-		}
-		req.Header.Set("Authorization", c.authHeader)
-		req.Header.Set("Accept", "application/json")
-		req.Header.Set("User-Agent", c.userAgent)
-		// Asks for a 401 instead of a sign-in redirect when the credential is
-		// not accepted. Microsoft's own client sends it; without it a rejected
-		// token can come back as a 203 HTML page that looks like success.
-		req.Header.Set("X-TFS-FedAuthRedirect", "Suppress")
-
+		req := template.Clone(ctx)
 		started := time.Now()
 		resp, err := c.httpClient.Do(req)
 		if err != nil {
