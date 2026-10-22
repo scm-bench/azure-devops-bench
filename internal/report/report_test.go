@@ -441,6 +441,13 @@ func containsText(out, want string) bool {
 	return false
 }
 
+// containsFlowed matches text the report wraps across lines: whitespace runs
+// on both sides compare as one space.
+func containsFlowed(out, want string) bool {
+	flat := strings.Join(strings.Fields(stripANSI(out)), " ")
+	return strings.Contains(flat, strings.Join(strings.Fields(want), " "))
+}
+
 func stripANSI(s string) string {
 	var b strings.Builder
 	for i := 0; i < len(s); {
@@ -1155,8 +1162,16 @@ func TestOverviewCollapsesUnreadToOneSentence(t *testing.T) {
 	if strings.Contains(out, statusUnread) {
 		t.Errorf("unread findings should not appear as rows in the overview\n---\n%s", out)
 	}
-	if !containsText(out, "3 controls could not be read (Unread) on PRJ/locked; see Scan warnings below.") {
-		t.Errorf("no unread summary sentence\n---\n%s", out)
+	if !containsFlowed(out, "3 controls could not be read (Unread) on PRJ/locked: CIS-1.1.3, CIS-1.1.15, CIS-1.1.16; see Scan warnings below.") {
+		t.Errorf("no unread summary sentence naming the controls\n---\n%s", out)
+	}
+
+	// With no warning to explain them, the sentence must say where the
+	// explanation is, or it is a dead end.
+	rep.Metadata.Warnings = nil
+	out = renderReport(t, rep, Options{Format: FormatTable})
+	if !containsFlowed(out, "rerun with --details=CIS-1.1.3,CIS-1.1.15,CIS-1.1.16 for why.") {
+		t.Errorf("with no warnings the unread sentence should point at --details\n---\n%s", out)
 	}
 	// The control no API can answer is a different thing and keeps its row.
 	if !containsText(out, "CIS-1.3.5") {
