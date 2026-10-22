@@ -362,7 +362,7 @@ func TestARejectedCredentialExitsTwo(t *testing.T) {
 	if ExitCode(err) != ExitError || err == nil || !strings.Contains(err.Error(), "credential rejected") {
 		t.Fatalf("err = %v", err)
 	}
-	if !strings.Contains(stderr, "1 requests · 1 GET · 0 writes · read-only") {
+	if !strings.Contains(stderr, "1 request · 1 GET · 0 writes · read-only") {
 		t.Errorf("stderr = %s", stderr)
 	}
 }

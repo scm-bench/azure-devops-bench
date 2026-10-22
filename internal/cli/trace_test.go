@@ -124,7 +124,7 @@ func TestQuietTracerStillCounts(t *testing.T) {
 	if buf.Len() != 0 {
 		t.Errorf("a quiet tracer wrote %q", buf.String())
 	}
-	if s, _ := tr.summary(); !strings.Contains(s, "1 requests") {
+	if s, _ := tr.summary(); !strings.Contains(s, "1 request ·") {
 		t.Errorf("summary = %q, want the request counted anyway", s)
 	}
 }
