@@ -168,13 +168,17 @@ func departedResources(old, current map[findingKey]engine.Finding) []Change {
 		entry.change.Details = departedDetails(entry.controls, entry.failures)
 		out = append(out, entry.change)
 	}
-	sort.Slice(out, func(i, j int) bool {
-		if wa, wb := checks.Weight(out[i].Severity), checks.Weight(out[j].Severity); wa != wb {
-			return wa > wb
-		}
-		return out[i].Resource < out[j].Resource
-	})
+	sort.Slice(out, func(i, j int) bool { return lessDeparted(out[i], out[j]) })
 	return out
+}
+
+// lessDeparted orders departed resources: the worst failure they carried
+// first, then by name.
+func lessDeparted(a, b Change) bool {
+	if wa, wb := checks.Weight(a.Severity), checks.Weight(b.Severity); wa != wb {
+		return wa > wb
+	}
+	return a.Resource < b.Resource
 }
 
 // departedDetails says what the resource was carrying when it was last seen,
@@ -229,16 +233,17 @@ func changeOf(f engine.Finding) Change {
 // sortChanges orders a category the way it is read: worst severity first, then
 // by benchmark number, then by resource.
 func sortChanges(changes []Change) {
-	sort.SliceStable(changes, func(i, j int) bool {
-		a, b := changes[i], changes[j]
-		if wa, wb := checks.Weight(a.Severity), checks.Weight(b.Severity); wa != wb {
-			return wa > wb
-		}
-		if a.CISID != b.CISID {
-			return checks.LessCISID(a.CISID, b.CISID)
-		}
-		return a.Resource < b.Resource
-	})
+	sort.SliceStable(changes, func(i, j int) bool { return lessChange(changes[i], changes[j]) })
+}
+
+func lessChange(a, b Change) bool {
+	if wa, wb := checks.Weight(a.Severity), checks.Weight(b.Severity); wa != wb {
+		return wa > wb
+	}
+	if a.CISID != b.CISID {
+		return checks.LessCISID(a.CISID, b.CISID)
+	}
+	return a.Resource < b.Resource
 }
 
 // SameInstance reports whether two snapshots describe the same instance.

@@ -113,10 +113,16 @@ type Bundle struct {
 
 // Load parses the embedded policy bundle and validates every control.
 func Load() (*Bundle, error) {
+	return loadFrom(policiesFS)
+}
+
+// loadFrom does the work of Load against any file system laid out like the
+// embedded one, so a malformed bundle can be tested without shipping one.
+func loadFrom(fsys fs.FS) (*Bundle, error) {
 	bundle := &Bundle{}
 	seen := map[string]string{}
 
-	err := fs.WalkDir(policiesFS, "policies", func(p string, d fs.DirEntry, err error) error {
+	err := fs.WalkDir(fsys, "policies", func(p string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -134,7 +140,7 @@ func Load() (*Bundle, error) {
 			if strings.HasSuffix(d.Name(), "_test.rego") {
 				return nil
 			}
-			src, readErr := policiesFS.ReadFile(p)
+			src, readErr := fs.ReadFile(fsys, p)
 			if readErr != nil {
 				return fmt.Errorf("read %s: %w", p, readErr)
 			}
@@ -143,7 +149,7 @@ func Load() (*Bundle, error) {
 			if d.Name() != "metadata.json" {
 				return nil
 			}
-			raw, readErr := policiesFS.ReadFile(p)
+			raw, readErr := fs.ReadFile(fsys, p)
 			if readErr != nil {
 				return fmt.Errorf("read %s: %w", p, readErr)
 			}

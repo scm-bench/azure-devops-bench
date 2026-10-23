@@ -5,9 +5,18 @@
 package safefile
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
+)
+
+// createTemp and chmod are os.CreateTemp and os.Chmod; variables so a test can
+// stand in a full disk, or a filesystem that refuses a mode, and see the
+// failure reported.
+var (
+	createTemp = os.CreateTemp
+	chmod      = os.Chmod
 )
 
 // Mode is the permission every file written here ends up with.
@@ -34,7 +43,7 @@ func Write(path string, data []byte) error {
 			return fmt.Errorf("create %s: %w", dir, err)
 		}
 	}
-	tmp, err := os.CreateTemp(dir, "."+filepath.Base(path)+".*.tmp")
+	tmp, err := createTemp(dir, "."+filepath.Base(path)+".*.tmp")
 	if err != nil {
 		return fmt.Errorf("create a temporary file next to %s: %w", path, err)
 	}
@@ -43,19 +52,13 @@ func Write(path string, data []byte) error {
 	// exists and the removal is a harmless no-op.
 	defer os.Remove(tmpName)
 
-	if err := tmp.Chmod(Mode); err != nil {
-		tmp.Close()
-		return fmt.Errorf("restrict %s: %w", tmpName, err)
-	}
-	if _, err := tmp.Write(data); err != nil {
-		tmp.Close()
-		return fmt.Errorf("write %s: %w", path, err)
-	}
-	if err := tmp.Sync(); err != nil {
-		tmp.Close()
-		return fmt.Errorf("write %s: %w", path, err)
-	}
-	if err := tmp.Close(); err != nil {
+	// Each step runs even if an earlier one failed — harmless, since a
+	// failure means the temporary file is removed rather than renamed — so
+	// every reason it failed is reported together, and the file is closed
+	// whatever happened.
+	chmodErr := tmp.Chmod(Mode)
+	_, writeErr := tmp.Write(data)
+	if err := errors.Join(chmodErr, writeErr, tmp.Sync(), tmp.Close()); err != nil {
 		return fmt.Errorf("write %s: %w", path, err)
 	}
 	if err := os.Rename(tmpName, path); err != nil {
@@ -64,7 +67,7 @@ func Write(path string, data []byte) error {
 	// The rename carried the temporary file's mode over, but a filesystem
 	// that ignored the chmod above (some network mounts do) is caught here
 	// rather than trusted.
-	if err := os.Chmod(path, Mode); err != nil {
+	if err := chmod(path, Mode); err != nil {
 		return fmt.Errorf("restrict %s: %w", path, err)
 	}
 	return nil

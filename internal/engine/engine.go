@@ -5,7 +5,6 @@ package engine
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"path"
 	"sort"
@@ -114,11 +113,18 @@ type Engine struct {
 	selected []checks.Check
 	// now decides which exceptions have lapsed; a field so tests can fix it.
 	now func() time.Time
+	// encode converts a resource to OPA's value form; a field so tests can
+	// make it fail and see that the run stops rather than judging half an input.
+	encode func(any) (ast.Value, error)
 }
+
+// loadBundle is checks.Load; a variable so a test can stand in a bundle that
+// fails to load or holds a broken policy.
+var loadBundle = checks.Load
 
 // New compiles the embedded policies for the given platform and configuration.
 func New(ctx context.Context, cfg config.Config, platform string) (*Engine, error) {
-	bundle, err := checks.Load()
+	bundle, err := loadBundle()
 	if err != nil {
 		return nil, fmt.Errorf("load policy bundle: %w", err)
 	}
@@ -147,6 +153,7 @@ func New(ctx context.Context, cfg config.Config, platform string) (*Engine, erro
 		cfg:      cfg,
 		bundle:   bundle,
 		prepared: make(map[string]rego.PreparedEvalQuery),
+		encode:   toAST,
 	}
 
 	for _, check := range bundle.Checks {
@@ -227,11 +234,11 @@ func validateSelection(cfg config.Config, bundle *checks.Bundle) error {
 // evaluation's input grow with the organization rather than with the
 // repository, which is quadratic over a scan.
 func (e *Engine) Evaluate(ctx context.Context, snapshot *scm.Snapshot) (*Report, error) {
-	cfgValue, err := toJSONValue(e.cfg)
+	cfgValue, err := e.encode(e.cfg)
 	if err != nil {
 		return nil, fmt.Errorf("encode config: %w", err)
 	}
-	metaValue, err := toJSONValue(snapshot.Metadata)
+	metaValue, err := e.encode(snapshot.Metadata)
 	if err != nil {
 		return nil, fmt.Errorf("encode snapshot metadata: %w", err)
 	}
@@ -249,18 +256,15 @@ func (e *Engine) Evaluate(ctx context.Context, snapshot *scm.Snapshot) (*Report,
 	}
 
 	if len(orgChecks) > 0 {
-		orgValue, err := toJSONValue(snapshot.Organization)
+		orgValue, err := e.encode(snapshot.Organization)
 		if err != nil {
 			return nil, fmt.Errorf("encode organization: %w", err)
 		}
-		input, err := ast.InterfaceToValue(map[string]any{
+		input := inputObject(map[string]ast.Value{
 			"resource": orgValue,
 			"config":   cfgValue,
 			"metadata": metaValue,
 		})
-		if err != nil {
-			return nil, fmt.Errorf("convert organization input: %w", err)
-		}
 		for _, check := range orgChecks {
 			report.Findings = append(report.Findings,
 				e.evaluateOne(ctx, e.prepared[check.ID], check, InstanceResourceName, ResourceOrganization, input, report))
@@ -275,7 +279,7 @@ func (e *Engine) Evaluate(ctx context.Context, snapshot *scm.Snapshot) (*Report,
 		// about the project should not be able to walk into sibling repos.
 		bare := project
 		bare.Repositories = nil
-		projValue, err := toJSONValue(bare)
+		projValue, err := e.encode(bare)
 		if err != nil {
 			return nil, fmt.Errorf("encode project %s: %w", project.Key, err)
 		}
@@ -287,19 +291,16 @@ func (e *Engine) Evaluate(ctx context.Context, snapshot *scm.Snapshot) (*Report,
 				continue
 			}
 			report.Repositories++
-			repoValue, err := toJSONValue(repo)
+			repoValue, err := e.encode(repo)
 			if err != nil {
 				return nil, fmt.Errorf("encode repository %s: %w", repo.FullName, err)
 			}
-			input, err := ast.InterfaceToValue(map[string]any{
+			input := inputObject(map[string]ast.Value{
 				"resource": repoValue,
 				"project":  projValue,
 				"config":   cfgValue,
 				"metadata": metaValue,
 			})
-			if err != nil {
-				return nil, fmt.Errorf("convert repository input %s: %w", repo.FullName, err)
-			}
 			for _, check := range repoChecks {
 				report.Findings = append(report.Findings,
 					e.evaluateOne(ctx, e.prepared[check.ID], check, repo.FullName, ResourceRepository, input, report))
@@ -454,18 +455,22 @@ func decodeResult(value any) (policyResult, error) {
 	return policyResult{Status: status, Details: details, Evidence: evidence}, nil
 }
 
-// toJSONValue converts a Go value into the plain maps and slices OPA expects,
-// honouring the json tags that define the snapshot's contract with the rules.
-func toJSONValue(v any) (any, error) {
-	raw, err := json.Marshal(v)
-	if err != nil {
-		return nil, err
+// toAST converts a Go value into OPA's value form, honouring the json tags
+// that define the snapshot's contract with the rules. InterfaceToValue
+// round-trips a struct through encoding/json itself (numbers kept exact via
+// json.Number), so each part of an input is converted once and the input
+// object below only assembles them.
+func toAST(v any) (ast.Value, error) {
+	return ast.InterfaceToValue(v)
+}
+
+// inputObject assembles one evaluation's input from values already converted.
+func inputObject(fields map[string]ast.Value) ast.Value {
+	items := make([][2]*ast.Term, 0, len(fields))
+	for k, v := range fields {
+		items = append(items, ast.Item(ast.StringTerm(k), ast.NewTerm(v)))
 	}
-	var out any
-	if err := json.Unmarshal(raw, &out); err != nil {
-		return nil, err
-	}
-	return out, nil
+	return ast.NewObject(items...)
 }
 
 // sortFindings orders the report the way it is read: worst first, then by

@@ -763,9 +763,6 @@ func (f *Fetcher) fetchRepositories(ctx context.Context, ps *projectState, repos
 	out := make([]scm.Repository, len(selected))
 	done := make([]bool, len(selected))
 	sem := f.repoSlots
-	if sem == nil {
-		sem = make(chan struct{}, f.concurrency)
-	}
 	var wg sync.WaitGroup
 	var completed atomic.Int64
 	for i, r := range selected {

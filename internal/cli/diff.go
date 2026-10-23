@@ -66,9 +66,6 @@ Exit codes: 0 no regression, 1 at least one PASS -> FAIL, 2 the comparison faile
 
 func runDiff(cmd *cobra.Command, opts *diffOptions, beforePath, afterPath string) error {
 	ctx := cmd.Context()
-	if ctx == nil {
-		ctx = context.Background()
-	}
 
 	// Discovered exactly the way scan discovers it, and named on stderr for
 	// the same reason: both sides of a diff are re-evaluated with these
@@ -77,24 +74,16 @@ func runDiff(cmd *cobra.Command, opts *diffOptions, beforePath, afterPath string
 	// the instance's.
 	configPath := opts.configPath
 	if configPath == "" {
-		discovered, err := config.Discover()
-		if err != nil {
-			return err
-		}
-		if discovered != "" {
-			configPath = discovered
-		}
+		configPath = config.Discover()
 	}
 	if configPath != "" {
 		stderr := cmd.ErrOrStderr()
 		console.Writer{W: stderr, P: console.Painter{Enabled: isTerminal(stderr) && !opts.noColor && !hasNoColorEnv()}}.
 			Line(console.Info, "using config %s", configPath)
 	}
+	// Load validates, as it does for scan.
 	cfg, err := config.Load(configPath)
 	if err != nil {
-		return err
-	}
-	if err := cfg.Validate(); err != nil {
 		return err
 	}
 
@@ -113,10 +102,8 @@ func runDiff(cmd *cobra.Command, opts *diffOptions, beforePath, afterPath string
 		return fmt.Errorf("these snapshots came from different organizations (%s and %s); pass --allow-other-instance if that is deliberate",
 			before.Metadata.BaseURL, after.Metadata.BaseURL)
 	}
-	if before.Metadata.Platform != after.Metadata.Platform {
-		return fmt.Errorf("these snapshots came from different platforms (%s and %s)",
-			before.Metadata.Platform, after.Metadata.Platform)
-	}
+	// No platform comparison is needed here: readSnapshot refuses anything
+	// that is not an Azure DevOps snapshot, so both sides already agree.
 
 	beforeReport, err := evaluateSnapshot(ctx, cfg, before)
 	if err != nil {
@@ -176,8 +163,12 @@ func runDiff(cmd *cobra.Command, opts *diffOptions, beforePath, afterPath string
 }
 
 // evaluateSnapshot runs the policy bundle over one snapshot. Both sides go
-// through this, so neither can be evaluated under different rules.
-func evaluateSnapshot(ctx context.Context, cfg config.Config, snapshot *scm.Snapshot) (*engine.Report, error) {
+// through this, so neither can be evaluated under different rules. A variable
+// so a test can stand in an evaluation that fails or reports policy errors on
+// one side only.
+var evaluateSnapshot = evaluateWithBundle
+
+func evaluateWithBundle(ctx context.Context, cfg config.Config, snapshot *scm.Snapshot) (*engine.Report, error) {
 	eng, err := engine.New(ctx, cfg, snapshot.Metadata.Platform)
 	if err != nil {
 		return nil, err

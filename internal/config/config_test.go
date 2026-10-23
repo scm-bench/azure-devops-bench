@@ -326,9 +326,9 @@ func TestDiscoverPrefersTheWorkingDirectory(t *testing.T) {
 	t.Chdir(work)
 
 	// Nothing anywhere: no path, no error.
-	path, err := Discover()
-	if err != nil || path != "" {
-		t.Fatalf("Discover() = %q, %v; want none", path, err)
+	path := Discover()
+	if path != "" {
+		t.Fatalf("Discover() = %q, want none", path)
 	}
 
 	// User config alone is found...
@@ -336,7 +336,7 @@ func TestDiscoverPrefersTheWorkingDirectory(t *testing.T) {
 	if err := os.WriteFile(userCfg, []byte(""), 0o600); err != nil {
 		t.Fatalf("write: %v", err)
 	}
-	if path, _ = Discover(); path != userCfg {
+	if path = Discover(); path != userCfg {
 		t.Errorf("Discover() = %q, want %q", path, userCfg)
 	}
 
@@ -344,13 +344,13 @@ func TestDiscoverPrefersTheWorkingDirectory(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(work, ".azure-devops-bench.yaml"), []byte(""), 0o600); err != nil {
 		t.Fatalf("write: %v", err)
 	}
-	if path, _ = Discover(); path != ".azure-devops-bench.yaml" {
+	if path = Discover(); path != ".azure-devops-bench.yaml" {
 		t.Errorf("Discover() = %q, want the hidden working-directory file", path)
 	}
 	if err := os.WriteFile(filepath.Join(work, "azure-devops-bench.yaml"), []byte(""), 0o600); err != nil {
 		t.Fatalf("write: %v", err)
 	}
-	if path, _ = Discover(); path != "azure-devops-bench.yaml" {
+	if path = Discover(); path != "azure-devops-bench.yaml" {
 		t.Errorf("Discover() = %q, want the visible name first", path)
 	}
 }
