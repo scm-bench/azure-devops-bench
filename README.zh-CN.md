@@ -44,26 +44,17 @@ Azure DevOps Server 2022+ 集合）的快照，用 Rego 编写的策略进行判
 
 ---
 
-## 30 秒试用
-
-不需要组织，不需要 token，也不用任何配置：二进制里自带一个示例组织，
-`--demo` 直接评估它。
-
-```bash
-go install github.com/scm-bench/azure-devops-bench/cmd/azure-devops-bench@latest
-azure-devops-bench scan --demo
-```
-
-也可以从 [releases](https://github.com/scm-bench/azure-devops-bench/releases) 下载压缩包，再运行 `azure-devops-bench scan --demo`。
-
 <p align="center">
-  <img src="https://raw.githubusercontent.com/scm-bench/azure-devops-bench/main/docs/demo.svg" alt="azure-devops-bench scan --demo：每条发现附带修复所需的设置路径，最后是得分" width="760">
+  <img src="https://raw.githubusercontent.com/scm-bench/azure-devops-bench/main/docs/demo.gif" alt="azure-devops-bench scan --demo：每条发现附带修复所需的设置路径，最后是得分" width="800">
 </p>
 
-报告会标明这是示例数据。它以退出码 1 结束，因为示例里有 HIGH 级别的失败项——
-真实扫描同一个组织也会这样退出。准备好扫描自己的组织时，见[快速开始](#快速开始)。
+自己试一下，不需要组织，也不需要 token —— `--demo` 会评估二进制里自带的示例：
 
-<sub>截图由 [`hack/demo-screenshot.sh`](hack/demo-screenshot.sh) 生成。</sub>
+```bash
+go install github.com/scm-bench/azure-devops-bench/cmd/azure-devops-bench@latest && azure-devops-bench scan --demo
+```
+
+<sub>动画由 [`hack/demo.tape`](hack/demo.tape) 用 [vhs](https://github.com/charmbracelet/vhs) 录制。</sub>
 
 ---
 
