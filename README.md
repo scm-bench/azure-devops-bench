@@ -55,7 +55,7 @@ and its [SCM snapshot schema](https://github.com/scm-bench/scm-bench/blob/main/d
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/scm-bench/azure-devops-bench/main/docs/demo.gif" alt="azure-devops-bench scan --demo: findings with the settings path to fix each one, then the score" width="800">
+  <img src="docs/demo.gif" alt="azure-devops-bench scan --demo: findings with the settings path to fix each one, then the score" width="800">
 </p>
 
 Try it yourself, with no organization and no token — `--demo` evaluates a sample built into the binary:

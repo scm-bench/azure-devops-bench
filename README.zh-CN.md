@@ -45,7 +45,7 @@ Azure DevOps Server 2022+ 集合）的快照，用 Rego 编写的策略进行判
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/scm-bench/azure-devops-bench/main/docs/demo.gif" alt="azure-devops-bench scan --demo：每条发现附带修复所需的设置路径，最后是得分" width="800">
+  <img src="docs/demo.gif" alt="azure-devops-bench scan --demo：每条发现附带修复所需的设置路径，最后是得分" width="800">
 </p>
 
 自己试一下，不需要组织，也不需要 token —— `--demo` 会评估二进制里自带的示例：
