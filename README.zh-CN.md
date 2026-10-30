@@ -44,6 +44,20 @@ Azure DevOps Server 2022+ 集合）的快照，用 Rego 编写的策略进行判
 
 ---
 
+<p align="center">
+  <img src="docs/demo.gif" alt="azure-devops-bench scan --demo：每条发现附带修复所需的设置路径，最后是得分" width="800">
+</p>
+
+自己试一下，不需要组织，也不需要 token —— `--demo` 会评估二进制里自带的示例：
+
+```bash
+go install github.com/scm-bench/azure-devops-bench/cmd/azure-devops-bench@latest && azure-devops-bench scan --demo
+```
+
+<sub>动画由 [`hack/demo.tape`](hack/demo.tape) 用 [vhs](https://github.com/charmbracelet/vhs) 录制。</sub>
+
+---
+
 ## 唯一需要先了解的设计决定
 
 **无法判定的规则输出 `MANUAL`，绝不输出 `PASS` 或 `FAIL`。**

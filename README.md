@@ -54,6 +54,20 @@ and its [SCM snapshot schema](https://github.com/scm-bench/scm-bench/blob/main/d
 
 ---
 
+<p align="center">
+  <img src="docs/demo.gif" alt="azure-devops-bench scan --demo: findings with the settings path to fix each one, then the score" width="800">
+</p>
+
+Try it yourself, with no organization and no token — `--demo` evaluates a sample built into the binary:
+
+```bash
+go install github.com/scm-bench/azure-devops-bench/cmd/azure-devops-bench@latest && azure-devops-bench scan --demo
+```
+
+<sub>The recording is made by [`hack/demo.tape`](hack/demo.tape) with [vhs](https://github.com/charmbracelet/vhs).</sub>
+
+---
+
 ## The one design decision worth knowing
 
 **A control that could not be evaluated reports `MANUAL`, never `PASS` or `FAIL`.**
